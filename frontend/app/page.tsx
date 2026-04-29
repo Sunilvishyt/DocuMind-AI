@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Footer from "@/components/landing/Footer";
 import CtaSection from "@/components/landing/CtaSection";
 import BentoLayout from "@/components/landing/BentoLayout";

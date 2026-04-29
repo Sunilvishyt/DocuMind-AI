@@ -1,4 +1,5 @@
 import { Button } from "../ui/button";
+import { RainbowButton } from "../ui/rainbow-button";
 
 function CtaSection() {
   return (
@@ -9,12 +10,19 @@ function CtaSection() {
           Ready to unlock your data?
         </h2>
         <div className="flex flex-col md:flex-row justify-center gap-4">
-          <Button
+          <RainbowButton
+            size="lg"
+            className="text-2xl p-8 rounded-[300px] "
+            color="red"
+          >
+            Start Your Free Analysis
+          </RainbowButton>
+          {/* <Button
             size="lg"
             className="h-16 px-12 bg-white text-black hover:bg-slate-200 rounded-full text-xl font-bold transition-all hover:scale-105"
           >
             Start Your Free Analysis
-          </Button>
+          </Button> */}
         </div>
       </div>
     </section>

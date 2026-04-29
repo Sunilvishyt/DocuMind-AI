@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import ChatPreview from "./ChatPreview";
 import { motion } from "framer-motion";
-
+import { AuroraText } from "@/components/ui/aurora-text";
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
@@ -49,7 +49,7 @@ export default function HeroSection() {
           >
             Deep Intelligence <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7bd0ff] via-[#bec6e0] to-[#dec29a]">
-              For Every Document
+              <AuroraText> For Every Document</AuroraText>
             </span>
           </motion.h1>
 
@@ -68,14 +68,14 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="h-14 px-8 bg-secondary text-primary hover:scale-105 transition-transform rounded-xl font-bold text-lg gap-2"
+              className="h-14 px-8 bg-secondary text-primary hover:scale-105 transition-transform rounded-xl font-bold text-lg gap-2 hover:bg-secondary"
             >
               Start Analyzing <ArrowRight className="w-5 h-5" />
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-lg"
+              className="h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-lg hover:bg-primary hover:text-secondary"
             >
               Watch Demo
             </Button>

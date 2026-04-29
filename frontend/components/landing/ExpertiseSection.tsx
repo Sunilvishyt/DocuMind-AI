@@ -1,19 +1,22 @@
 import { motion } from "framer-motion";
 import { Banknote, Scale, Stethoscope, Zap } from "lucide-react";
+import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 
 export default function ExpertiseSection() {
   return (
     <section className="py-24 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-20">
         <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-          Specialized Intelligence Layers
+          <DiaTextReveal
+            text="Specialized Intelligence Layers"
+            textColor="var(--secondary)"
+          />
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
           Dedicated expert models fine-tuned for high-stakes industries where
           precision is non-negotiable.
         </p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           {
@@ -68,6 +71,9 @@ export default function ExpertiseSection() {
             </ul>
           </motion.div>
         ))}
+      </div>
+      <div className="flex justify-center items-center pt-5">
+        <h3 className="text-2xl">and much more...</h3>
       </div>
     </section>
   );

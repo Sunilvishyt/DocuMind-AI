@@ -44,7 +44,7 @@ export function SignupForm({
                   <Input
                     id="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="username"
                     required
                   />
                 </Field>
@@ -58,16 +58,26 @@ export function SignupForm({
                   />
                 </Field>
                 <Field>
-                  <Field className="grid grid-cols-2 gap-4">
+                  <Field className="grid grid-cols-2 gap-4 ">
                     <Field>
                       <FieldLabel htmlFor="password">Password</FieldLabel>
-                      <Input id="password" type="password" required />
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="password"
+                        required
+                      />
                     </Field>
                     <Field>
                       <FieldLabel htmlFor="confirm-password">
                         Confirm Password
                       </FieldLabel>
-                      <Input id="confirm-password" type="password" required />
+                      <Input
+                        id="confirm-password"
+                        type="password"
+                        placeholder="password again "
+                        required
+                      />
                     </Field>
                   </Field>
                   <FieldDescription>
@@ -95,8 +105,8 @@ export function SignupForm({
           </CardContent>
         </Card>
         <FieldDescription className="px-6 text-center py-4">
-          By clicking continue, you agree to our{" "}
-          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          By clicking continue, you agree to our Terms of Service and Privacy
+          Policy
         </FieldDescription>
       </motion.div>
     </div>

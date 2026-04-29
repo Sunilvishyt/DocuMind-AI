@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Topbar() {
   return (
-    <header className="fixed top-0 w-full z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-md">
+    <header className="fixed top-0 w-full z-50 border-b border-white/5 bg-primary/50 backdrop-blur-md">
       <div className="flex justify-between items-center px-6 md:px-12 h-16 w-full max-w-7xl mx-auto">
         <div className="text-3xl font-bold tracking-tighter text-white flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-br from-secondary to-primary rounded-lg flex items-center justify-center">

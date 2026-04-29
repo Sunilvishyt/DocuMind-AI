@@ -1,9 +1,7 @@
 import { SignupForm } from "@/components/signup-form";
-import { LayoutBottomIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { a, div } from "motion/react-client";
 import { cn } from "@/lib/utils";
 import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
+
 export default function page() {
   return (
     // Main wrapper must be relative to contain the absolute background
