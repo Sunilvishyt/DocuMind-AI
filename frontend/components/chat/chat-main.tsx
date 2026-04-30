@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { div } from "motion/react-client";
 
 export function ChatMain({
   fileName,
@@ -106,39 +107,47 @@ export function ChatMain({
             </motion.div>
           ) : (
             /* MESSAGES UI */
-            messages.map((msg, i) => (
-              <motion.div
-                initial={{ opacity: 0, x: msg.role === "user" ? 20 : -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                key={i}
-                className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
-              >
-                <div
-                  style={{ "--my-color": color } as React.CSSProperties}
-                  className={`size-10 rounded-xl flex items-center justify-center shrink-0 border shadow-lg ${
-                    msg.role === "assistant"
-                      ? "bg-(--my-color)/10 border-(--my-color)/20 text-(--my-color)"
-                      : "bg-[#1b1b1d] border-white/10 text-slate-300"
-                  }`}
+            <motion.div
+              key="chat-messages"
+              className="space-y-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {messages.map((msg, i) => (
+                <motion.div
+                  initial={{ opacity: 0, x: msg.role === "user" ? 20 : -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  key={i}
+                  className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
                 >
-                  {msg.role === "assistant" ? (
-                    <Bot size={20} />
-                  ) : (
-                    <User size={20} />
-                  )}
-                </div>
-                <div
-                  style={{ "--my-color": color } as React.CSSProperties}
-                  className={`max-w-[80%] p-5 rounded-2xl shadow-sm ${
-                    msg.role === "assistant"
-                      ? "bg-[#1b1b1d] rounded-tl-none border border-white/5 text-slate-200"
-                      : "bg-(--my-color)/20 border border-(--my-color)/10 text-white rounded-tr-none ml-auto"
-                  }`}
-                >
-                  <p className="text-sm leading-relaxed">{msg.content}</p>
-                </div>
-              </motion.div>
-            ))
+                  <div
+                    style={{ "--my-color": color } as React.CSSProperties}
+                    className={`size-10 rounded-xl flex items-center justify-center shrink-0 border shadow-lg ${
+                      msg.role === "assistant"
+                        ? "bg-(--my-color)/10 border-(--my-color)/20 text-(--my-color)"
+                        : "bg-[#1b1b1d] border-white/10 text-slate-300"
+                    }`}
+                  >
+                    {msg.role === "assistant" ? (
+                      <Bot size={20} />
+                    ) : (
+                      <User size={20} />
+                    )}
+                  </div>
+                  <div
+                    style={{ "--my-color": color } as React.CSSProperties}
+                    className={`max-w-[80%] p-5 rounded-2xl shadow-sm ${
+                      msg.role === "assistant"
+                        ? "bg-[#1b1b1d] rounded-tl-none border border-white/5 text-slate-200"
+                        : "bg-(--my-color)/20 border border-(--my-color)/10 text-white rounded-tr-none ml-auto"
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </AnimatePresence>
 

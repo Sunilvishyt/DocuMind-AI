@@ -1,0 +1,28 @@
+"use client";
+
+import { useState } from "react";
+import Sidebar from "@/components/home/Sidebar";
+import ExpertSelection from "@/components/home/ExpertSelection";
+import HomeSettings from "@/components/home/HomeSettings";
+
+// Animation Variants for Framer Motion
+
+export default function AssistantSelector() {
+  const [activeTab, setActiveTab] = useState<"assistants" | "settings">(
+    "assistants",
+  );
+
+  return (
+    <div className="flex h-screen w-full bg-slate-950 text-slate-200 antialiased overflow-hidden font-sans">
+      {/* Sidebar Navigation */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto relative">
+        <div className="max-w-7xl mx-auto px-10 py-12">
+          {activeTab === "assistants" ? <ExpertSelection /> : <HomeSettings />}
+        </div>
+      </main>
+    </div>
+  );
+}
