@@ -34,10 +34,10 @@ function ExpertSelection() {
     <>
       {/* Header section */}
       <section className="mb-12 mt-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-50 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
           Select your expert
         </h1>
-        <p className="text-slate-400 mt-3 text-lg">
+        <p className="text-muted-foreground mt-3 text-lg">
           Choose an AI assistant specialized for your current task.
         </p>
       </section>
@@ -52,16 +52,16 @@ function ExpertSelection() {
         {/* Medical Expert */}
         <motion.div
           variants={cardVariants}
-          className="bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/5 rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] hover:border-emerald-500/30"
+          className="bg-card backdrop-blur-xl border border-border rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.15)] hover:border-emerald-500/50 dark:hover:border-emerald-500/30"
         >
           <Link href="/chat/medical-assistant">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
               <Stethoscope size={28} className="text-emerald-400" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-100 mb-3 group-hover:text-emerald-300 transition-colors">
+            <h3 className="text-2xl font-semibold text-card-foreground mb-3 group-hover:text-emerald-400 dark:group-hover:text-emerald-300 transition-colors">
               Medical Expert
             </h3>
-            <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
               Specialized in clinical research, drug interactions, and medical
               literature synthesis with rigorous peer-reviewed accuracy.
             </p>
@@ -75,16 +75,16 @@ function ExpertSelection() {
         {/* Coding Architect */}
         <motion.div
           variants={cardVariants}
-          className="bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/5 rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.15)] hover:border-blue-500/30"
+          className="bg-card backdrop-blur-xl border border-border rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.15)] hover:border-blue-500/50 dark:hover:border-blue-500/30"
         >
           <Link href="/chat/coding-assistant">
             <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 border border-blue-500/20">
               <Code2 size={28} className="text-blue-400" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-100 mb-3 group-hover:text-blue-300 transition-colors">
+            <h3 className="text-2xl font-semibold text-card-foreground mb-3 group-hover:text-blue-400 dark:group-hover:text-blue-300 transition-colors">
               Coding Architect
             </h3>
-            <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
               Advanced algorithm optimization, systems architecture design, and
               complex debugging across 50+ languages.
             </p>
@@ -98,16 +98,16 @@ function ExpertSelection() {
         {/* Finance Analyst */}
         <motion.div
           variants={cardVariants}
-          className="bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/5 rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(234,179,8,0.15)] hover:border-yellow-500/30"
+          className="bg-card backdrop-blur-xl border border-border rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(234,179,8,0.15)] hover:border-yellow-500/50 dark:hover:border-yellow-500/30"
         >
           <Link href="/chat/finance-assistant">
             <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-6 border border-yellow-500/20">
               <TrendingUp size={28} className="text-yellow-400" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-100 mb-3 group-hover:text-yellow-300 transition-colors">
+            <h3 className="text-2xl font-semibold text-card-foreground mb-3 group-hover:text-yellow-400 dark:group-hover:text-yellow-300 transition-colors">
               Finance Analyst
             </h3>
-            <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
               Expert-level market modeling, risk assessment reports, and
               real-time economic data interpretation for high-stakes decisions.
             </p>
@@ -121,16 +121,16 @@ function ExpertSelection() {
         {/* Legal Scholar */}
         <motion.div
           variants={cardVariants}
-          className="bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/5 rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(168,85,247,0.15)] hover:border-purple-500/30"
+          className="bg-card backdrop-blur-xl border border-border rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(168,85,247,0.15)] hover:border-purple-500/50 dark:hover:border-purple-500/30"
         >
           <Link href="/chat/legal-assistant">
             <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 border border-purple-500/20">
               <Scale size={28} className="text-purple-400" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-100 mb-3 group-hover:text-purple-300 transition-colors">
+            <h3 className="text-2xl font-semibold text-card-foreground mb-3 group-hover:text-purple-400 dark:group-hover:text-purple-300 transition-colors">
               Legal Scholar
             </h3>
-            <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
               Case law research, contract cross-examination, and regulatory
               compliance parsing across global jurisdictions.
             </p>
@@ -144,45 +144,25 @@ function ExpertSelection() {
         {/* General Assistant */}
         <motion.div
           variants={cardVariants}
-          className="bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/5 rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(148,163,184,0.15)] hover:border-slate-500/30"
+          className="bg-card backdrop-blur-xl border border-border rounded-3xl p-8 transition-all duration-300 group cursor-pointer hover:-translate-y-1 hover:shadow-[0_0_30px_-5px_rgba(148,163,184,0.15)] hover:border-muted/50 dark:hover:border-muted/30"
         >
           <Link href="/chat/general-assistant">
-            <div className="w-14 h-14 rounded-2xl bg-slate-500/10 flex items-center justify-center mb-6 border border-slate-500/20">
-              <Bot size={28} className="text-slate-400" />
+            <div className="w-14 h-14 rounded-2xl bg-muted/10 flex items-center justify-center mb-6 border border-muted/20">
+              <Bot size={28} className="text-muted-foreground" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-100 mb-3 group-hover:text-slate-300 transition-colors">
+            <h3 className="text-2xl font-semibold text-card-foreground mb-3 group-hover:text-muted-foreground dark:group-hover:text-muted-foreground transition-colors">
               General Assistant
             </h3>
-            <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+            <p className="text-muted-foreground mb-8 leading-relaxed text-sm">
               Versatile multitasking partner for everyday queries, scheduling,
               creative writing, and high-level summaries.
             </p>
-            <div className="flex items-center text-slate-400 font-semibold text-sm group-hover:gap-2 transition-all">
+            <div className="flex items-center text-muted-foreground font-semibold text-sm group-hover:gap-2 transition-all">
               <span>Start Chat</span>
               <ChevronRight size={16} className="ml-1" />
             </div>
           </Link>
         </motion.div>
-
-        {/* Custom Model (Coming Soon) */}
-        {/* <motion.div
-          variants={cardVariants}
-          className="relative overflow-hidden border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-colors cursor-not-allowed group bg-white/[0.01]"
-        >
-          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <span className="bg-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold border border-white/20 backdrop-blur-md">
-              Coming Soon
-            </span>
-          </div>
-
-          <div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center mb-4 text-slate-600">
-            <Plus size={24} />
-          </div>
-          <p className="text-2xl font-semibold text-slate-500">Custom Model</p>
-          <p className="text-slate-600 text-sm mt-2">
-            Train an assistant on your proprietary data
-          </p>
-        </motion.div> */}
       </motion.section>
     </>
   );

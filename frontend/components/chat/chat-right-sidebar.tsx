@@ -36,7 +36,7 @@ export function ChatInsights({
     }
   }
   return (
-    <aside className="w-80 border-l border-white/5 bg-[#080a0d] p-6 flex flex-col gap-8">
+    <aside className="w-80 border-l border-border bg-card p-6 flex flex-col gap-8">
       <div>
         <div
           style={{ "--my-color": color } as React.CSSProperties}
@@ -60,7 +60,7 @@ export function ChatInsights({
         </div>
       </div>
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Lightbulb size={16} />
           <h4 className="text-[10px] font-bold uppercase tracking-widest">
             Suggested Actions
@@ -70,7 +70,7 @@ export function ChatInsights({
           {suggestions.map((s, i) => (
             <button
               key={i}
-              className="text-left p-3 rounded-lg bg-white/5 border border-white/5 text-xs text-slate-400 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2 group"
+              className="text-left p-3 rounded-lg bg-card/50 border border-border text-xs text-muted-foreground hover:bg-card/80 hover:text-foreground transition-all flex items-center gap-2 group"
             >
               <MessageSquare
                 style={{ "--my-color": color } as React.CSSProperties}

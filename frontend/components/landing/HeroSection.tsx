@@ -33,7 +33,7 @@ export default function HeroSection() {
           {/* <motion.div variants={itemVariants}>
                 <Badge
                   variant="outline"
-                  className="py-1 px-4 border-white/10 bg-white/5 text-secondary gap-2 rounded-full"
+                  className="py-1 px-4 border-border bg-card text-secondary gap-2 rounded-full"
                 >
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
@@ -45,7 +45,7 @@ export default function HeroSection() {
 
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
+            className="text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]"
           >
             Deep Intelligence <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7bd0ff] via-[#bec6e0] to-[#dec29a]">
@@ -55,7 +55,7 @@ export default function HeroSection() {
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-slate-400 max-w-lg leading-relaxed"
+            className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed"
           >
             DocuMind AI transforms static PDFs into dynamic knowledge hubs. Chat
             with your data using specialized neural layers for Finance, Law, and
@@ -68,14 +68,14 @@ export default function HeroSection() {
           >
             <Button
               size="lg"
-              className="h-14 px-8 bg-secondary text-primary hover:scale-105 transition-transform rounded-xl font-bold text-lg gap-2 hover:bg-secondary"
+              className="h-14 px-8 bg-secondary text-secondary-foreground hover:scale-105 transition-transform rounded-xl font-bold text-lg gap-2 hover:bg-secondary/90"
             >
               Start Analyzing <ArrowRight className="w-5 h-5" />
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-lg hover:bg-primary hover:text-secondary"
+              className="h-14 px-8 border-border bg-card/50 hover:bg-card text-foreground rounded-xl font-bold text-lg hover:bg-card hover:border-border/80 transition-all"
             >
               Watch Demo
             </Button>

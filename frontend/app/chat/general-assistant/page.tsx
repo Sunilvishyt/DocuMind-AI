@@ -9,7 +9,7 @@ export default function ChatPage() {
   const [fileName, setFileName] = useState("");
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0e1116] text-[#e4e2e4]">
+    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
       {/* Left Sidebar: Chat History */}
 
       {/* Main Chat Workspace */}

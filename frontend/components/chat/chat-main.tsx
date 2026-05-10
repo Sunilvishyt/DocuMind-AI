@@ -31,19 +31,19 @@ export function ChatMain({
   ]);
 
   return (
-    <main className="flex-1 flex flex-col relative bg-[#0e1116]">
+    <main className="flex-1 flex flex-col relative bg-background">
       {/* IMPROVED HEADER */}
-      <header className="h-16 border-b border-white/5 flex items-center justify-between px-8 bg-[#131315]/80 backdrop-blur-md sticky top-0 z-10">
+      <header className="h-16 border-b border-border flex items-center justify-between px-8 bg-card/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div
             style={{ "--my-color": color } as React.CSSProperties}
-            className={`size-2 rounded-full animate-pulse ${fileName ? "bg-(--my-color)" : "bg-slate-500"}`}
+            className={`size-2 rounded-full animate-pulse ${fileName ? "bg-(--my-color)" : "bg-muted-foreground"}`}
           />
           <div className="flex flex-col">
-            <h1 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+            <h1 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               Current Session
             </h1>
-            <p className="text-sm font-medium text-slate-200">
+            <p className="text-sm font-medium text-foreground">
               {fileName ? fileName : "Awaiting Document..."}
             </p>
           </div>
@@ -84,10 +84,10 @@ export function ChatMain({
                 {fileName ? <FileText size={40} /> : <UploadCloud size={40} />}
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-xl font-semibold text-foreground">
                   {fileName ? "Document Ready" : "Start your Analysis"}
                 </h2>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {fileName
                     ? `I've processed "${fileName}". You can now ask for summaries, data extraction, or clinical insights.`
                     : "Upload a medical record, lab result, or pathology report in the sidebar to begin your secure AI-powered consultation."}
@@ -95,10 +95,10 @@ export function ChatMain({
               </div>
               {fileName && (
                 <div className="flex gap-2">
-                  <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-slate-400">
+                  <span className="px-3 py-1 rounded-lg bg-card/50 border border-border text-[10px] text-muted-foreground">
                     PDF Analysis Active
                   </span>
-                  <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] text-slate-400">
+                  <span className="px-3 py-1 rounded-lg bg-card/50 border border-border text-[10px] text-muted-foreground">
                     RAG Enabled
                   </span>
                 </div>
@@ -125,7 +125,7 @@ export function ChatMain({
                     className={`size-10 rounded-xl flex items-center justify-center shrink-0 border shadow-lg ${
                       msg.role === "assistant"
                         ? "bg-(--my-color)/10 border-(--my-color)/20 text-(--my-color)"
-                        : "bg-[#1b1b1d] border-white/10 text-slate-300"
+                        : "bg-card border-border text-foreground"
                     }`}
                   >
                     {msg.role === "assistant" ? (
@@ -138,8 +138,8 @@ export function ChatMain({
                     style={{ "--my-color": color } as React.CSSProperties}
                     className={`max-w-[80%] p-5 rounded-2xl shadow-sm ${
                       msg.role === "assistant"
-                        ? "bg-[#1b1b1d] rounded-tl-none border border-white/5 text-slate-200"
-                        : "bg-(--my-color)/20 border border-(--my-color)/10 text-white rounded-tr-none ml-auto"
+                        ? "bg-card rounded-tl-none border border-border text-foreground"
+                        : "bg-(--my-color)/20 border border-(--my-color)/10 text-foreground rounded-tr-none ml-auto"
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{msg.content}</p>
@@ -166,7 +166,7 @@ export function ChatMain({
               </div>
               <div
                 style={{ "--my-color": color } as React.CSSProperties}
-                className="p-5 rounded-2xl rounded-tl-none bg-[#1b1b1d] border border-(--my-color)/20 flex items-center gap-4"
+                className="p-5 rounded-2xl rounded-tl-none bg-card border border-(--my-color)/20 flex items-center gap-4"
               >
                 <div
                   style={{ "--my-color": color } as React.CSSProperties}
@@ -201,7 +201,7 @@ export function ChatMain({
       </div>
 
       {/* INPUT BAR */}
-      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#0e1116] via-[#0e1116] to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-background via-background to-transparent">
         <div className="max-w-3xl mx-auto relative group">
           <div
             style={{ "--my-color": color } as React.CSSProperties}
@@ -209,7 +209,7 @@ export function ChatMain({
           />
           <input
             style={{ "--my-color": color } as React.CSSProperties}
-            className="w-full h-14 bg-[#1b1b1d] border border-white/10 rounded-2xl pl-12 pr-16 focus:ring-2 focus:ring-(--my-color)/50 focus:border-(--my-color)/50 outline-none transition-all text-slate-200 placeholder:text-slate-600 relative z-10"
+            className="w-full h-14 bg-card border border-border rounded-2xl pl-12 pr-16 focus:ring-2 focus:ring-(--my-color)/50 focus:border-(--my-color)/50 outline-none transition-all text-foreground placeholder:text-muted-foreground relative z-10"
             placeholder={
               fileName
                 ? "Ask about the document..."
@@ -219,13 +219,13 @@ export function ChatMain({
           />
           <Sparkles
             style={{ "--my-color": color } as React.CSSProperties}
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 transition-colors ${fileName ? "text-(--my-color)" : "text-slate-600"}`}
+            className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 transition-colors ${fileName ? "text-(--my-color)" : "text-muted-foreground"}`}
             size={18}
           />
           <button
             style={{ "--my-color": color } as React.CSSProperties}
             disabled={!fileName}
-            className="absolute right-3 top-1/2 -translate-y-1/2 size-10 bg-(--my-color) disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-(--my-color)/20 z-20"
+            className="absolute right-3 top-1/2 -translate-y-1/2 size-10 bg-(--my-color) disabled:bg-muted disabled:text-muted-foreground text-foreground rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-(--my-color)/20 z-20"
           >
             <Send size={18} />
           </button>

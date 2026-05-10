@@ -13,7 +13,7 @@ export default function AssistantSelector() {
   );
 
   return (
-    <div className="flex h-screen w-full bg-slate-950 text-slate-200 antialiased overflow-hidden font-sans">
+    <div className="flex h-screen w-full bg-background text-foreground antialiased overflow-hidden font-sans">
       {/* Sidebar Navigation */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
