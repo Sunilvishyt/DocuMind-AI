@@ -165,11 +165,10 @@ function ExpertSelection() {
         </motion.div>
 
         {/* Custom Model (Coming Soon) */}
-        <motion.div
+        {/* <motion.div
           variants={cardVariants}
           className="relative overflow-hidden border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-colors cursor-not-allowed group bg-white/[0.01]"
         >
-          {/* Overlay for Coming Soon */}
           <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <span className="bg-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold border border-white/20 backdrop-blur-md">
               Coming Soon
@@ -183,7 +182,7 @@ function ExpertSelection() {
           <p className="text-slate-600 text-sm mt-2">
             Train an assistant on your proprietary data
           </p>
-        </motion.div>
+        </motion.div> */}
       </motion.section>
     </>
   );

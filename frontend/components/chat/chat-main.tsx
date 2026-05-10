@@ -10,7 +10,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { div } from "motion/react-client";
 
 export function ChatMain({
   fileName,
