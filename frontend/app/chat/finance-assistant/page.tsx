@@ -5,20 +5,30 @@ import { ChatInsights } from "@/components/chat/chat-right-sidebar";
 import { useState } from "react";
 
 export default function ChatPage() {
-  // In a real app, fetch messages here.
   const [fileName, setFileName] = useState("");
+  const [docStatus, setDocStatus] = useState("Start your Analysis");
+  const [docReady, setDocReady] = useState(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    [],
+  );
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
-      {/* Left Sidebar: Chat History */}
-
       {/* Main Chat Workspace */}
-      <ChatMain fileName={fileName} color={ASSISTANT_MODES.FINANCIAL.color} />
+      <ChatMain
+        fileName={fileName}
+        color={ASSISTANT_MODES.FINANCIAL.color}
+        docStatus={docStatus}
+        docReady={docReady}
+        assistantType="finance"
+      />
 
-      {/* Right Sidebar: Medical Mode & Suggestions */}
+      {/* Right Sidebar: Finance Mode & Suggestions */}
       <ChatInsights
         config={ASSISTANT_MODES.FINANCIAL}
         setFileName={setFileName}
+        setDocStatus={setDocStatus}
+        setDocReady={setDocReady}
       />
     </div>
   );

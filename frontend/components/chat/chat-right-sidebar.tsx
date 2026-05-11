@@ -15,24 +15,45 @@ interface Prop {
 export function ChatInsights({
   config,
   setFileName,
+  setDocStatus,
+  setDocReady,
 }: {
   config: Prop;
   setFileName: (fileName: string) => void;
+  setDocStatus: (status: string) => void;
+  setDocReady: (ready: boolean) => void;
 }) {
   const { suggestions, description, label, icon: Icon, color } = config;
-  // const suggestions = [
-  //   "Summarize pathology report",
-  //   "Check drug interactions",
-  //   "Generate clinical brief",
-  //   "Extract lab values",
-  // ];
 
-  function handleFileChange(files: File[]) {
+  async function handleFileChange(files: File[]) {
     // files is already the array [File, File, ...]
-    const file = files[0];
-    if (file) {
-      console.log("File uploaded:", file.name);
-      setFileName(file.name);
+    try {
+      const file = files[0];
+      if (file) {
+        console.log("File uploaded:", file.name);
+        setFileName(file.name);
+
+        const formData = new FormData();
+        formData.append("file", file);
+        setDocStatus("Uploading PDF...");
+
+        const response = await fetch("http://localhost:8000/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        if (data.message === "success") {
+          setDocStatus(`PDF Uploaded - ${data.chunks} chunks created`);
+          setDocReady(true);
+        } else if (data.error) {
+          setDocStatus(`Error: ${data.error}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setDocStatus(
+        `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
   return (

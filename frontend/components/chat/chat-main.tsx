@@ -14,22 +14,68 @@ import { motion, AnimatePresence } from "framer-motion";
 export function ChatMain({
   fileName,
   color,
+  docStatus,
+  docReady,
+  assistantType = "general",
 }: {
   fileName: string;
   color: string;
+  docStatus: string;
+  docReady: boolean;
+  assistantType?: string;
 }) {
-  const [isThinking] = useState(false);
-  const [messages] = useState<{ role: string; content: string }[]>([
-    {
-      role: "assistant",
-      content: "Hello! How can I help you today?",
-    },
-    {
-      role: "user",
-      content: "I need help with my legal documents.",
-    },
-  ]);
+  const [isThinking, setIsThinking] = useState(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    [],
+  );
+  const [query, setQuery] = useState("");
 
+  async function handleMessageSend() {
+    if (!query.trim()) return;
+
+    // Don't allow chat if no document is uploaded
+    if (!docReady) {
+      alert("Please upload a document first");
+      return;
+    }
+
+    setIsThinking(true);
+    setMessages((prev) => [...prev, { role: "user", content: query }]);
+
+    try {
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: query,
+          assistant_type: assistantType,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to get response");
+      }
+
+      const data = await response.json();
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.answer },
+      ]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `Error: ${error instanceof Error ? error.message : "Failed to get response"}`,
+        },
+      ]);
+    } finally {
+      setIsThinking(false);
+      setQuery("");
+    }
+  }
   return (
     <main className="flex-1 flex flex-col relative bg-background">
       {/* IMPROVED HEADER */}
@@ -44,7 +90,7 @@ export function ChatMain({
               Current Session
             </h1>
             <p className="text-sm font-medium text-foreground">
-              {fileName ? fileName : "Awaiting Document..."}
+              {docReady ? fileName : "Awaiting Document..."}
             </p>
           </div>
         </div>
@@ -85,7 +131,7 @@ export function ChatMain({
               </div>
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-foreground">
-                  {fileName ? "Document Ready" : "Start your Analysis"}
+                  {docStatus}
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {fileName
@@ -211,11 +257,13 @@ export function ChatMain({
             style={{ "--my-color": color } as React.CSSProperties}
             className="w-full h-14 bg-card border border-border rounded-2xl pl-12 pr-16 focus:ring-2 focus:ring-(--my-color)/50 focus:border-(--my-color)/50 outline-none transition-all text-foreground placeholder:text-muted-foreground relative z-10"
             placeholder={
-              fileName
+              docReady
                 ? "Ask about the document..."
                 : "Upload a file to enable chat..."
             }
-            disabled={!fileName}
+            disabled={!docReady}
+            onChange={(e) => setQuery(e.target.value)}
+            value={query}
           />
           <Sparkles
             style={{ "--my-color": color } as React.CSSProperties}
@@ -226,6 +274,7 @@ export function ChatMain({
             style={{ "--my-color": color } as React.CSSProperties}
             disabled={!fileName}
             className="absolute right-3 top-1/2 -translate-y-1/2 size-10 bg-(--my-color) disabled:bg-muted disabled:text-muted-foreground text-foreground rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-(--my-color)/20 z-20"
+            onClick={handleMessageSend}
           >
             <Send size={18} />
           </button>

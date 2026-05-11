@@ -2,6 +2,7 @@ import "./globals.css";
 import { Figtree } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers/theme-provider";
+import { SessionCleanup } from "@/components/providers/session-cleanup";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Providers>{children}</Providers>
+        <SessionCleanup>
+          <Providers>{children}</Providers>
+        </SessionCleanup>
       </body>
     </html>
   );

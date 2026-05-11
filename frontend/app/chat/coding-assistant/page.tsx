@@ -5,18 +5,31 @@ import { ChatInsights } from "@/components/chat/chat-right-sidebar";
 import { useState } from "react";
 
 export default function ChatPage() {
-  // In a real app, fetch messages here.
   const [fileName, setFileName] = useState("");
+  const [docStatus, setDocStatus] = useState("Start your Analysis");
+  const [docReady, setDocReady] = useState(false);
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>(
+    [],
+  );
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
-      {/* Left Sidebar: Chat History */}
-
       {/* Main Chat Workspace */}
-      <ChatMain fileName={fileName} color={ASSISTANT_MODES.CODING.color} />
+      <ChatMain
+        fileName={fileName}
+        color={ASSISTANT_MODES.CODING.color}
+        docStatus={docStatus}
+        docReady={docReady}
+        assistantType="coding-assistant"
+      />
 
-      {/* Right Sidebar: Medical Mode & Suggestions */}
-      <ChatInsights config={ASSISTANT_MODES.CODING} setFileName={setFileName} />
+      {/* Right Sidebar: Coding Mode & Suggestions */}
+      <ChatInsights
+        config={ASSISTANT_MODES.CODING}
+        setFileName={setFileName}
+        setDocStatus={setDocStatus}
+        setDocReady={setDocReady}
+      />
     </div>
   );
 }
