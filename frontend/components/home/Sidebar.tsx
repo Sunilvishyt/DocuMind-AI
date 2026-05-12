@@ -1,5 +1,12 @@
-import { ChevronsUpDown, Settings, UserCircle2, Users } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Settings,
+  UserCircle2,
+  Users,
+  LogOut,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Sidebar({
   activeTab,
@@ -8,6 +15,8 @@ export default function Sidebar({
   activeTab: string;
   setActiveTab: (tab: "assistants" | "settings") => void;
 }) {
+  const { user, logout } = useAuth();
+
   return (
     <aside className="w-64 shrink-0 border-r border-border bg-sidebar/50 backdrop-blur-xl flex flex-col justify-between z-40">
       <div>
@@ -49,7 +58,7 @@ export default function Sidebar({
       {/* Bottom Section with Theme Toggle and Profile */}
       <div className="p-4 border-t border-border space-y-3">
         <ThemeToggle />
-        <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/5 dark:hover:bg-white/5 transition-colors group">
+        <div className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 dark:hover:bg-white/5 transition-colors group">
           <div className="flex items-center gap-3">
             <UserCircle2
               size={32}
@@ -57,12 +66,20 @@ export default function Sidebar({
             />
             <div className="text-left flex flex-col">
               <span className="text-sm font-medium text-foreground">
-                Dr. Smith
+                {user?.username || "User"}
               </span>
-              <span className="text-xs text-muted-foreground">ID: NX-8842</span>
+              <span className="text-xs text-muted-foreground">
+                ID: {user?.id?.slice(0, 8).toUpperCase() || "N/A"}
+              </span>
             </div>
           </div>
-          <ChevronsUpDown size={14} className="text-muted-foreground" />
+        </div>
+        <button
+          onClick={logout}
+          className="w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+        >
+          <LogOut size={16} />
+          Logout
         </button>
       </div>
     </aside>

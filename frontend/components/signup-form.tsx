@@ -17,11 +17,46 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const { register, error } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidationError(null);
+
+    // Validation
+    if (password !== confirmPassword) {
+      setValidationError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      setValidationError("Password must be at least 8 characters long");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await register(username, email, password, confirmPassword);
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6 w-90 ", className)} {...props}>
       <motion.div
@@ -37,7 +72,7 @@ export function SignupForm({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={handleSubmit}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -45,6 +80,8 @@ export function SignupForm({
                     id="name"
                     type="text"
                     placeholder="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </Field>
@@ -54,6 +91,8 @@ export function SignupForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </Field>
@@ -65,6 +104,8 @@ export function SignupForm({
                         id="password"
                         type="password"
                         placeholder="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </Field>
@@ -76,6 +117,8 @@ export function SignupForm({
                         id="confirm-password"
                         type="password"
                         placeholder="password again "
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                       />
                     </Field>
@@ -84,12 +127,20 @@ export function SignupForm({
                     Must be at least 8 characters long.
                   </FieldDescription>
                 </Field>
+                {(validationError || error) && (
+                  <Field>
+                    <p className="text-sm text-red-500">
+                      {validationError || error}
+                    </p>
+                  </Field>
+                )}
                 <Field>
                   <Button
                     type="submit"
-                    className="bg-card-foreground hover:border-secondary/20"
+                    disabled={isSubmitting}
+                    className="bg-card-foreground hover:border-secondary/20 disabled:opacity-50"
                   >
-                    Create Account
+                    {isSubmitting ? "Creating Account..." : "Create Account"}
                   </Button>
                   <FieldDescription className="text-center ">
                     Already have an account?{"   "}

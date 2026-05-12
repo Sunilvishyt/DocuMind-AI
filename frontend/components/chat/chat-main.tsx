@@ -10,7 +10,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 export function ChatMain({
   fileName,
   color,
@@ -190,7 +191,13 @@ export function ChatMain({
                         : "bg-(--my-color)/20 border border-(--my-color)/10 text-foreground rounded-tr-none ml-auto"
                     }`}
                   >
-                    <p className="text-sm leading-relaxed">{msg.content}</p>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      // className="prose prose-sm text-foreground"
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                    {/* <p className="text-sm leading-relaxed">{msg.content}</p> */}
                   </div>
                 </motion.div>
               ))}

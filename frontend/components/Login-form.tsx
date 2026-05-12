@@ -18,10 +18,30 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, error } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await login(email, password);
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6 w-90", className)} {...props}>
       <motion.div
@@ -37,7 +57,7 @@ export function LoginForm({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={handleSubmit}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -45,6 +65,8 @@ export function LoginForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </Field>
@@ -54,15 +76,23 @@ export function LoginForm({
                     id="password"
                     type="password"
                     placeholder="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </Field>
+                {error && (
+                  <Field>
+                    <p className="text-sm text-red-500">{error}</p>
+                  </Field>
+                )}
                 <Field>
                   <Button
                     type="submit"
-                    className="bg-card-foreground hover:border-white cursor-pointer"
+                    disabled={isSubmitting}
+                    className="bg-card-foreground hover:border-white cursor-pointer disabled:opacity-50"
                   >
-                    Login
+                    {isSubmitting ? "Logging in..." : "Login"}
                   </Button>
                   <FieldDescription className="text-center cursor-pointer">
                     Don&apos;t have an account?{"   "}
