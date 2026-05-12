@@ -29,7 +29,7 @@ export function LoginForm({
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
       >
-        <Card className="bg-primary text-secondary border border-secondary/15">
+        <Card className="bg-slate-900 text-slate-50 border border-slate-700">
           <CardHeader className="text-center ">
             <CardTitle className="text-xl">Login to your account</CardTitle>
             <CardDescription>

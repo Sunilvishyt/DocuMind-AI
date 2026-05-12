@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 function Page() {
   return (
     // Main wrapper must be relative to contain the absolute background
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-card-foreground">
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-950">
       {/* 1. Background Layer */}
       <InteractiveGridPattern
         width={60}

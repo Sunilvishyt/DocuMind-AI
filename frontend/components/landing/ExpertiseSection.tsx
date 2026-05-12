@@ -9,7 +9,7 @@ export default function ExpertiseSection() {
         <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
           <DiaTextReveal
             text="Specialized Intelligence Layers"
-            textColor="var(--secondary)"
+            textColor="white"
           />
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
