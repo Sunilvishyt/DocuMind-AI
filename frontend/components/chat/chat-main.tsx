@@ -130,7 +130,9 @@ export function ChatMain({
                 {fileName ? <FileText size={40} /> : <UploadCloud size={40} />}
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl font-semibold text-foreground">
+                <h2
+                  className={`text-xl font-semibold text-foreground ${docStatus == "Uploading PDF..." ? "animate-pulse" : ""}`}
+                >
                   {docStatus}
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">

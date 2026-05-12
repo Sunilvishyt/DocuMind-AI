@@ -70,7 +70,7 @@ export function LoginForm({
                       href="/auth/register"
                       className="text-secondary/20 hover:text-secondary"
                     >
-                      <span className="text-secondary/80 hover:text-secondary hover:underline">
+                      <span className="text-white/80 hover:text-secondary hover:underline hover:text-white/100 transition-colors">
                         Sign Up
                       </span>
                     </Link>

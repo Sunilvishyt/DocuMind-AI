@@ -94,7 +94,7 @@ export function SignupForm({
                   <FieldDescription className="text-center ">
                     Already have an account?{"   "}
                     <Link href="/auth/login">
-                      <span className="text-secondary/80 hover:text-secondary hover:underline">
+                      <span className="text-white/80 hover:text-secondary hover:underline hover:text-white/100 transition-colors">
                         Sign In{" "}
                       </span>
                     </Link>
