@@ -185,9 +185,9 @@ export function ChatMain({
                   </div>
                   <div
                     style={{ "--my-color": color } as React.CSSProperties}
-                    className={`max-w-[80%] p-5 rounded-2xl shadow-sm ${
+                    className={`max-w-[70%] p-7 rounded-2xl shadow-sm ${
                       msg.role === "assistant"
-                        ? "bg-card rounded-tl-none border border-border text-foreground"
+                        ? "bg-card rounded-tl-none border border-border text-foreground prose prose-invert"
                         : "bg-(--my-color)/20 border border-(--my-color)/10 text-foreground rounded-tr-none ml-auto"
                     }`}
                   >

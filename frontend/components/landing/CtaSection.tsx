@@ -1,7 +1,5 @@
-import { Button } from "../ui/button";
 import { RainbowButton } from "../ui/rainbow-button";
 import { TypingAnimation } from "../ui/typing-animation";
-
 function CtaSection() {
   return (
     <section className="py-32 px-6 text-center relative overflow-hidden">
@@ -15,6 +13,9 @@ function CtaSection() {
             size="lg"
             className="text-2xl p-8 rounded-[300px] "
             color="red"
+            onClick={() => {
+              window.location.href = "/home";
+            }}
           >
             Start Your Free Analysis
           </RainbowButton>

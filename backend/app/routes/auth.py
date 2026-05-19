@@ -50,6 +50,7 @@ async def register(request: UserRegisterRequest, db: Session = Depends(get_db)):
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+
     except IntegrityError:
         db.rollback()
         raise HTTPException(

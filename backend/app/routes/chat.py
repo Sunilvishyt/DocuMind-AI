@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 
 from app.services.rag_service import ask_question
+import json
 
 router = APIRouter()
 
@@ -15,7 +16,8 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest):
     try:
         answer = ask_question(req.question, req.assistant_type)
-        return {"answer": answer}
+        json_string = json.dumps({"answer": answer}, ensure_ascii=False)
+        return Response(content=json_string, media_type="application/json")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
