@@ -13,6 +13,7 @@ colorama==0.4.6
 cryptography==48.0.0
 dataclasses-json==0.6.7
 distro==1.9.0
+easyocr==1.7.2
 faiss-cpu==1.13.2
 fastapi==0.136.1
 filelock==3.29.0
@@ -106,5 +107,7 @@ yarl==1.23.0
 zstandard==0.25.0
 PyJWT==2.8.0
 bcrypt==4.1.2
-passlib==1.7.4argon2-cffi==23.1.0psycopg2-binary==2.9.9
+passlib==1.7.4
+argon2-cffi==23.1.0
+psycopg2-binary==2.9.9
 email-validator==2.1.0
