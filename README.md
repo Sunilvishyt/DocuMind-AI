@@ -2,21 +2,35 @@
 
 A powerful Retrieval-Augmented Generation (RAG) application that intelligently analyzes uploaded PDF and image documents, enabling specialized AI assistants to answer queries with context-aware responses.
 
-## 🌟 Features
+## Features
 
 - **Multi-Format Document Support**: Upload and process both PDF and image documents
 - **Intelligent Content Retrieval**: Automatically extracts and chunks relevant content from documents
 - **Specialized AI Assistants**:
-  - 🏥 **Medical Assistant** - For medical documents and health-related queries
-  - 💰 **Financial Assistant** - For financial documents and investment analysis
-  - ⚖️ **Legal Assistant** - For legal documents and contract analysis
-  - 💻 **Coding Assistant** - For technical documentation and code-related queries
-  - 🌐 **General Assistant** - For diverse document types and general queries
+  - **Medical Assistant** - For medical documents and health-related queries
+  - **Financial Assistant** - For financial documents and investment analysis
+  - **Legal Assistant** - For legal documents and contract analysis
+  - **Coding Assistant** - For technical documentation and code-related queries
+  - **General Assistant** - For diverse document types and general queries
 - **Context-Aware AI Responses**: LLM generates answers based on retrieved document chunks
 - **User Authentication**: Secure login and registration system
 - **Session Management**: Track and manage user sessions and chat history
 - **Real-Time Chat Interface**: Interactive UI for seamless document querying
 - **Dark Mode Support**: Theme toggle for user comfort
+
+## Screenshots
+<h4>Landing Page</h4>
+<img src="./screenshots/hero.png">
+
+<h4>Expert Selection</h4>
+<img src="./screenshots/assistant.png">
+
+<h4>Chat Page</h4>
+<img src="./screenshots/chat.png">
+
+<h4>Chat with your Documents</h4>
+<img src="./screenshots/talk.png">
+
 
 ## 🛠️ Tech Stack
 
@@ -46,7 +60,7 @@ A powerful Retrieval-Augmented Generation (RAG) application that intelligently a
 - **Frontend Runtime**: Node.js 18+
 - **Package Managers**: pip (Python), npm (Node.js)
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 DocuMind-AI/
@@ -108,7 +122,7 @@ DocuMind-AI/
 └── LICENSE                           # Project license
 ```
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before setting up DocuMind AI, ensure you have the following installed:
 
@@ -122,7 +136,7 @@ You'll also need:
 - **Google API Key** (for Google Generative AI access)
 - **PostgreSQL Connection URL** (for database connection)
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -272,7 +286,7 @@ The frontend will be available at `http://localhost:3000`
 - Your conversation history is automatically saved
 - You can reference previous answers and continue the conversation
 
-## 🧠 AI Assistants
+## AI Assistants
 
 Each assistant is specialized for specific document types and uses domain-specific prompts:
 
@@ -284,7 +298,7 @@ Each assistant is specialized for specific document types and uses domain-specif
 | Coding Assistant    | Technical & Programming     | Code documentation, technical specifications, README files |
 | General Assistant   | Multiple Domains            | General documents, mixed content, diverse queries          |
 
-## 🔐 Security Features
+## Security Features
 
 - **JWT Authentication**: Secure token-based authentication
 - **Password Hashing**: Bcrypt password encryption
@@ -292,7 +306,7 @@ Each assistant is specialized for specific document types and uses domain-specif
 - **Database Security**: Secure PostgreSQL connections with SSL
 - **Environment Variables**: Sensitive data stored in `.env` files
 
-## 🛠️ Development
+## Development
 
 ### Backend Development
 
@@ -323,7 +337,7 @@ npm start
 npm run lint
 ```
 
-## 📦 Dependencies
+##  Dependencies
 
 ### Backend Key Dependencies
 
@@ -343,7 +357,7 @@ npm run lint
 - **react-markdown**: Markdown rendering
 - **react-dropzone**: File upload handling
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Backend Issues
 
