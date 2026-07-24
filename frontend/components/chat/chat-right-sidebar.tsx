@@ -39,6 +39,7 @@ export function ChatInsights({
 
         const response = await fetch("http://localhost:8000/upload", {
           method: "POST",
+          credentials: "include",
           body: formData,
         });
         const data = await response.json();

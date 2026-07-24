@@ -1,51 +1,57 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from app.schemas import UserRegisterRequest, RegisterResponse, UserLoginRequest
+from app.schemas import LoginResponse
 from sqlalchemy.orm import Session
-from app.database import get_db
 from app.models import User
-from app.schemas import (
-    UserRegisterRequest,
-    UserLoginRequest,
-    RegisterResponse,
-    LoginResponse,
-    UserResponse,
-)
-from app.auth import hash_password, verify_password, create_access_token
+from fastapi import APIRouter, HTTPException, Response, status, Depends
+from app.utils.password_utils import hash_password, verify_hash
+from app.database import get_db
+from sqlalchemy import or_
+from app.config.jwt import create_access_token
+from app.constants import COOKIE_NAME, JWT_EXPIRATION_MINUTES, ENVIRONMENT
 from sqlalchemy.exc import IntegrityError
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=RegisterResponse)
-async def register(request: UserRegisterRequest, db: Session = Depends(get_db)):
+def register_user(
+    request: UserRegisterRequest,
+    db: Session = Depends(get_db),
+):
     """Register a new user"""
-
-    # Validate passwords match
     if request.password != request.confirm_password:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match"
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Password does not match"
         )
 
-    # Check if user already exists
+    # or_ is used to check if either case is true return the existing user.
     existing_user = (
         db.query(User)
-        .filter((User.email == request.email) | (User.username == request.username))
+        .filter(or_(User.username == request.username, User.email == request.email))
         .first()
     )
 
+    # If the user already exists, return an error
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email or username already registered",
+        if existing_user.username == request.username:
+            return HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already exists",
+            )
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
         )
 
-    # Create new user
+    # Hash the password
     hashed_password = hash_password(request.password)
+
+    # Create a new user
     new_user = User(
         username=request.username,
         email=request.email,
         hashed_password=hashed_password,
     )
-
     try:
         db.add(new_user)
         db.commit()
@@ -55,29 +61,27 @@ async def register(request: UserRegisterRequest, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email or username already registered",
+            detail="Username or email already exists",
         )
-
-    user_response = UserResponse.model_validate(new_user)
-    return RegisterResponse(message="User registered successfully", user=user_response)
+    return {"message": "User registered successfully"}
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(request: UserLoginRequest, db: Session = Depends(get_db)):
-    """Login user and return JWT token"""
-
+def login_user(
+    request: UserLoginRequest, response: Response, db: Session = Depends(get_db)
+):
     # Find user by email
     user = db.query(User).filter(User.email == request.email).first()
 
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
         )
 
     # Verify password
-    if not verify_password(request.password, user.hashed_password):
+    if not verify_hash(request.password, user.hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password"
         )
 
     # Check if user is active
@@ -86,45 +90,34 @@ async def login(request: UserLoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_403_FORBIDDEN, detail="User account is inactive"
         )
 
-    # Create JWT token
-    access_token = create_access_token(
-        data={"sub": str(user.id), "email": user.email, "username": user.username}
+    access_token = create_access_token(str(user.id))
+
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=access_token,
+        httponly=True,  # Critical for XSS protection
+        secure=False
+        if ENVIRONMENT == "development"
+        else True,  # Use False ONLY for local localhost development
+        samesite="lax"
+        if ENVIRONMENT == "development"
+        else "none",  # Balance of CSRF security and usability
+        max_age=JWT_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
     )
 
-    user_response = UserResponse.model_validate(user)
-    return LoginResponse(
-        access_token=access_token, token_type="bearer", user=user_response
-    )
+    return {
+        "message": "Successfully logged in",
+        "user": {
+            "id": str(user.id),
+            "username": user.username,
+            "email": user.email,
+            "is_active": user.is_active,
+            "created_at": str(user.created_at),
+        },
+    }
 
 
-@router.get("/me", response_model=UserResponse)
-async def get_current_user(token: str = None, db: Session = Depends(get_db)):
-    """Get current authenticated user info"""
-    from app.auth import decode_token
-    from fastapi import Header
-
-    # Try to get token from Authorization header
-    if token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
-        )
-
-    payload = decode_token(token)
-    if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token"
-        )
-
-    user_id = payload.get("sub")
-    if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
-        )
-
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-
-    return UserResponse.model_validate(user)
+@router.post("/logout")
+def logout_user(response: Response):
+    response.delete_cookie(key=COOKIE_NAME)
+    return {"message": "Successfully logged out"}

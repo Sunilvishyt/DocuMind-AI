@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -21,29 +20,26 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, error } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await login(email, password);
     } catch (err) {
-      // Error is handled by the context
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 w-90", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 w-90")}>
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

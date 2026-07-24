@@ -1,23 +1,35 @@
-from fastapi import APIRouter, HTTPException, Response
-from pydantic import BaseModel
-
-from app.services.rag_service import ask_question
+from fastapi import APIRouter, Depends, HTTPException, Response
+from app.models import User
+from app.schemas import ChatRequest
+from app.config.vector_store import query_user_vectorstore
+from app.config.jwt import get_current_user
+from app.prompts.prompt_template import ASSISTANT_PROMPTS
+from app.config.llm import llm
 import json
 
 router = APIRouter()
 
 
-class ChatRequest(BaseModel):
-    question: str
-    assistant_type: str = "general"  # Default to general assistant
-
-
 @router.post("/chat")
-async def chat(req: ChatRequest):
+def check(req: ChatRequest, current_user: User = Depends(get_current_user)):
     try:
-        answer = ask_question(req.question, req.assistant_type)
-        json_string = json.dumps({"answer": answer}, ensure_ascii=False)
+        user_id = str(current_user.id)
+        related_docs = query_user_vectorstore(
+            query=req.question, current_user_id=user_id
+        )
+
+        prompt = ASSISTANT_PROMPTS.get(req.assistant_type, "general")
+
+        context = "\n\n".join([doc.page_content for doc in related_docs])
+
+        final_prompt = prompt.invoke({"context": context, "question": req.question})
+
+        response = llm.invoke(final_prompt)
+
+        json_string = json.dumps({"answer": response.content}, ensure_ascii=False)
+
         return Response(content=json_string, media_type="application/json")
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

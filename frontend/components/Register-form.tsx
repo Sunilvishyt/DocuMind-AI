@@ -20,10 +20,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function SignupForm({}: React.ComponentProps<"div">) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,14 +48,14 @@ export function SignupForm({
     try {
       await register(username, email, password, confirmPassword);
     } catch (err) {
-      // Error is handled by the context
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 w-90 ", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 w-90 ")}>
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

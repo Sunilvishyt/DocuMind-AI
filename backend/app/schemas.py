@@ -1,40 +1,9 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional, Any
+from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import datetime
 from uuid import UUID
+from typing import Any
 
 
-# Request schemas
-class UserRegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr
-    password: str = Field(..., min_length=8, max_length=72)
-    confirm_password: str = Field(..., min_length=8, max_length=72)
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "username": "john_doe",
-                "email": "john@example.com",
-                "password": "securepass123",
-                "confirm_password": "securepass123",
-            }
-        }
-    }
-
-
-class UserLoginRequest(BaseModel):
-    email: EmailStr
-    password: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {"email": "john@example.com", "password": "securepass123"}
-        }
-    }
-
-
-# Response schemas
 class UserResponse(BaseModel):
     id: str
     username: str
@@ -53,18 +22,26 @@ class UserResponse(BaseModel):
         return str(v)
 
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: UserResponse
+class UserRegisterRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=72)
+    confirm_password: str = Field(..., min_length=8, max_length=72)
 
 
-class LoginResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: UserResponse
+class UserLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class RegisterResponse(BaseModel):
     message: str
-    user: UserResponse
+
+
+class LoginResponse(BaseModel):
+    message: str
+
+
+class ChatRequest(BaseModel):
+    question: str
+    assistant_type: str = "general"  # Default to general assistant

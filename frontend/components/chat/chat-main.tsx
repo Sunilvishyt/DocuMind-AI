@@ -12,6 +12,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useRouter } from "next/navigation";
+
 export function ChatMain({
   fileName,
   color,
@@ -30,6 +32,7 @@ export function ChatMain({
     [],
   );
   const [query, setQuery] = useState("");
+  const router = useRouter();
 
   async function handleMessageSend() {
     if (!query.trim()) return;
@@ -46,12 +49,17 @@ export function ChatMain({
     try {
       const response = await fetch("http://localhost:8000/chat", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: query,
           assistant_type: assistantType,
         }),
       });
+
+      if (response.status === 401) {
+        router.push("/auth/login");
+      }
 
       if (!response.ok) {
         const error = await response.json();
@@ -77,6 +85,7 @@ export function ChatMain({
       setQuery("");
     }
   }
+
   return (
     <main className="flex-1 flex flex-col relative bg-background">
       {/* IMPROVED HEADER */}
@@ -155,6 +164,7 @@ export function ChatMain({
             </motion.div>
           ) : (
             /* MESSAGES UI */
+
             <motion.div
               key="chat-messages"
               className="space-y-8"

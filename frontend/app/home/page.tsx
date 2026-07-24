@@ -4,7 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/home/Sidebar";
 import ExpertSelection from "@/components/home/ExpertSelection";
 import HomeSettings from "@/components/home/HomeSettings";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+// import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Animation Variants for Framer Motion
 
@@ -14,22 +14,18 @@ export default function AssistantSelector() {
   );
 
   return (
-    <ProtectedRoute>
-      <div className="flex h-screen w-full bg-background text-foreground antialiased overflow-hidden font-sans">
-        {/* Sidebar Navigation */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    // <ProtectedRoute>
+    <div className="flex h-screen w-full bg-background text-foreground antialiased overflow-hidden font-sans">
+      {/* Sidebar Navigation */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto relative">
-          <div className="max-w-7xl mx-auto px-10 py-12">
-            {activeTab === "assistants" ? (
-              <ExpertSelection />
-            ) : (
-              <HomeSettings />
-            )}
-          </div>
-        </main>
-      </div>
-    </ProtectedRoute>
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto relative">
+        <div className="max-w-7xl mx-auto px-10 py-12">
+          {activeTab === "assistants" ? <ExpertSelection /> : <HomeSettings />}
+        </div>
+      </main>
+    </div>
+    // </ProtectedRoute>
   );
 }
