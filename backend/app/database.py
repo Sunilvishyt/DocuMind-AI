@@ -1,6 +1,6 @@
+from app.constants import POSTGRES_URL
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from app.constants import POSTGRES_URL
 
 # Create database engine
 engine = create_engine(

@@ -1,40 +1,39 @@
-"use client";
-
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { AuthContext, type User } from "./AuthContext";
 import { useRouter } from "next/navigation";
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  is_active: boolean;
-  created_at: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  // token: string | null;
-  isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (
-    username: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-  ) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  // const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // useEffect(() => {
+  //   const checkAuthStatus = async () => {
+  //     try {
+  //       setIsInitializing(true);
+  //       const response = await fetch("http://localhost:8000/api/auth/me", {
+  //         method: "GET",
+  //         credentials: "include",
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error("Uauthorized");
+  //       }
+
+  //       const userData: User = await response.json();
+  //       setUser(userData);
+  //     } catch (error) {
+  //       setUser(null);
+  //       console.error("Auth verification failed:", error);
+  //       router.push("/auth/login");
+  //     } finally {
+  //       setIsInitializing(false);
+  //     }
+  //   };
+  //   checkAuthStatus();
+  // }, [router]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -53,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!response.ok) {
           const data = await response.json();
-          throw new Error(data.detail || "Login failed");
+          throw new Error(data.detail || "Login failed"); //necessary to throw error only then it will go in catch block.
         }
 
         const data = await response.json();
@@ -66,7 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const errorMessage =
           err instanceof Error ? err.message : "Login failed";
         setError(errorMessage);
-        throw err;
       } finally {
         setIsLoading(false);
       }
@@ -112,7 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const errorMessage =
           err instanceof Error ? err.message : "Registration failed";
         setError(errorMessage);
-        throw err;
       } finally {
         setIsLoading(false);
       }
@@ -134,22 +131,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
-    // token,
     isLoading,
     error,
+    isInitializing,
+    setIsInitializing,
+    setUser,
     login,
     register,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: Boolean(user),
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  if (isInitializing) return <div>initializing...</div>;
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,10 +1,9 @@
 # DocuMind AI
 
-A powerful Retrieval-Augmented Generation (RAG) application that intelligently analyzes uploaded PDF and image documents, enabling specialized AI assistants to answer queries with context-aware responses.
+A powerful Retrieval-Augmented Generation (RAG) application that intelligently analyzes uploaded PDF documents, enabling specialized AI assistants to answer queries with context-aware responses.
 
 ## Features
 
-- **Multi-Format Document Support**: Upload and process both PDF and image documents
 - **Intelligent Content Retrieval**: Automatically extracts and chunks relevant content from documents
 - **Specialized AI Assistants**:
   - **Medical Assistant** - For medical documents and health-related queries
@@ -19,6 +18,7 @@ A powerful Retrieval-Augmented Generation (RAG) application that intelligently a
 - **Dark Mode Support**: Theme toggle for user comfort
 
 ## Screenshots
+
 <h4>Landing Page</h4>
 <img src="./screenshots/hero.png">
 
@@ -30,7 +30,6 @@ A powerful Retrieval-Augmented Generation (RAG) application that intelligently a
 
 <h4>Chat with your Documents</h4>
 <img src="./screenshots/talk.png">
-
 
 ## 🛠️ Tech Stack
 
@@ -128,7 +127,7 @@ Before setting up DocuMind AI, ensure you have the following installed:
 
 - **Recommended Python 3.10** (having issues in >3.10)
 - **Node.js 18 or higher** (includes npm)
-- **PostgreSQL** (or Neon for cloud-based PostgreSQL)
+- **PostgreSQL** (or Neon for cloud-based PostgreSQL with vector extension)
 - **Git** (for cloning the repository)
 
 You'll also need:
@@ -159,15 +158,21 @@ Create a `.env` file in the `backend` directory with the following variables:
 
 ```bash
 # Google API Configuration
-GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_API_KEY=your_google_api_key_here
 
 # Database Configuration
 POSTGRES_URL=postgresql://user:password@host:port/database?sslmode=require&channel_binding=require
+
+# Frontend URL
+FRONTEND_URL=http://localhost:3000
+
+# Environment "development" OR "production"
+ENVIRONMENT=development
 ```
 
 **Getting Your Credentials:**
 
-- **GOOGLE_API_KEY**:
+- **GEMINI_API_KEY**:
   1. Go to [Google AI Studio](https://aistudio.google.com/app/apikeys)
   2. Click "Get API Key"
   3. Create a new API key or use an existing one
@@ -337,7 +342,7 @@ npm start
 npm run lint
 ```
 
-##  Dependencies
+## Dependencies
 
 ### Backend Key Dependencies
 
@@ -371,7 +376,7 @@ npm run lint
 
 **Issue**: `Google API Key error`
 
-- **Solution**: Ensure your `GOOGLE_API_KEY` is correct and enabled in Google AI Studio
+- **Solution**: Ensure your `GEMINI_API_KEY` is correct and enabled in Google AI Studio
 
 ### Frontend Issues
 

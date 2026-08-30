@@ -67,10 +67,12 @@ export function ChatMain({
       }
 
       const data = await response.json();
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.answer },
-      ]);
+      const answer =
+        typeof data.answer === "string"
+          ? data.answer
+          : (JSON.stringify(data.answer) ?? "");
+
+      setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages((prev) => [
@@ -203,6 +205,7 @@ export function ChatMain({
                   >
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
+                      skipHtml
                       // className="prose prose-sm text-foreground"
                     >
                       {msg.content}

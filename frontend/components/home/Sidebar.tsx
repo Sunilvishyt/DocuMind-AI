@@ -1,12 +1,6 @@
-import {
-  ChevronsUpDown,
-  Settings,
-  UserCircle2,
-  Users,
-  LogOut,
-} from "lucide-react";
+import { Settings, UserCircle2, Users, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar({
   activeTab,

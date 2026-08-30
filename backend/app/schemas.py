@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import datetime
 from uuid import UUID
 from typing import Any
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class UserResponse(BaseModel):

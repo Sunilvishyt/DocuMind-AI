@@ -18,24 +18,16 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/context/AuthContext";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login, error } = useAuth();
+  const { login, isLoading, error } = useAuth();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await login(email, password);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await login(email, password);
   };
 
   return (
@@ -85,10 +77,10 @@ export function LoginForm() {
                 <Field>
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isLoading}
                     className="bg-card-foreground hover:border-white cursor-pointer disabled:opacity-50"
                   >
-                    {isSubmitting ? "Logging in..." : "Login"}
+                    {isLoading ? "Logging in..." : "Login"}
                   </Button>
                   <FieldDescription className="text-center cursor-pointer">
                     Don&apos;t have an account?{"   "}

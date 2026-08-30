@@ -1,8 +1,8 @@
+from app.constants import FRONTEND_URL
+from app.database import init_db
+from app.routes import auth, chat, upload
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.constants import FRONTEND_URL
-from app.routes import auth, upload, chat
-from app.database import init_db
 
 app = FastAPI()
 init_db()

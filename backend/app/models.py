@@ -1,9 +1,10 @@
 # database tables
-from sqlalchemy import Column, String, DateTime, Boolean
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+
+from app.database import Base
+from sqlalchemy import Boolean, Column, DateTime, String
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(Base):

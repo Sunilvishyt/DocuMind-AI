@@ -2,7 +2,7 @@
 
 import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
-import { AuthProvider } from "@/lib/auth-context";
+import { AuthProvider } from "@/context/AuthProvider";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (

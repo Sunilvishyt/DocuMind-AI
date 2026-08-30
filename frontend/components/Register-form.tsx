@@ -18,16 +18,15 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/context/AuthContext";
 
 export function SignupForm({}: React.ComponentProps<"div">) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const { register, error } = useAuth();
+  const { register, error, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,14 +43,7 @@ export function SignupForm({}: React.ComponentProps<"div">) {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      await register(username, email, password, confirmPassword);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await register(username, email, password, confirmPassword);
   };
 
   return (
@@ -134,10 +126,10 @@ export function SignupForm({}: React.ComponentProps<"div">) {
                 <Field>
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isLoading}
                     className="bg-card-foreground hover:border-secondary/20 disabled:opacity-50"
                   >
-                    {isSubmitting ? "Creating Account..." : "Create Account"}
+                    {isLoading ? "Creating Account..." : "Create Account"}
                   </Button>
                   <FieldDescription className="text-center ">
                     Already have an account?{"   "}

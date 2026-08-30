@@ -1,21 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
-from app.models import User
-from app.schemas import ChatRequest
-from app.config.vector_store import query_user_vectorstore
-from app.config.jwt import get_current_user
-from app.prompts.prompt_template import ASSISTANT_PROMPTS
-from app.config.llm import llm
 import json
+from typing import Annotated
+
+from app.config.jwt import get_current_user_id
+from app.config.llm import llm
+from app.config.vector_store import query_user_vectorstore
+from app.prompts.prompt_template import ASSISTANT_PROMPTS
+from app.schemas import ChatRequest
+from fastapi import APIRouter, Depends, HTTPException, Response
 
 router = APIRouter()
 
 
 @router.post("/chat")
-def check(req: ChatRequest, current_user: User = Depends(get_current_user)):
+def check(
+    req: ChatRequest, current_user_id: Annotated[str, Depends(get_current_user_id)]
+):
     try:
-        user_id = str(current_user.id)
         related_docs = query_user_vectorstore(
-            query=req.question, current_user_id=user_id
+            query=req.question, current_user_id=current_user_id
         )
 
         prompt = ASSISTANT_PROMPTS.get(req.assistant_type, "general")
@@ -32,5 +34,6 @@ def check(req: ChatRequest, current_user: User = Depends(get_current_user)):
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")

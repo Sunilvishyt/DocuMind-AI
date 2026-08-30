@@ -1,10 +1,12 @@
-from app.constants import SECRET_KEY, ALGORITHM, COOKIE_NAME, JWT_EXPIRATION_MINUTES
-import jwt
-from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, status, Request, Depends
-from app.models import User
+from typing import Annotated
+
+import jwt
+from app.constants import ALGORITHM, COOKIE_NAME, JWT_EXPIRATION_MINUTES, SECRET_KEY
 from app.database import get_db
+from app.models import User
+from fastapi import Depends, HTTPException, Request, status
+from sqlalchemy.orm import Session
 
 
 def create_access_token(user_id: str) -> str:
@@ -17,7 +19,36 @@ def create_access_token(user_id: str) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(request: Request, db: Session = Depends(get_db)):
+def get_current_user(request: Request, db: Annotated[Session, Depends(get_db)]) -> User:
+    """Dependency to extract token from cookies and verify the user."""
+
+    token = request.cookies.get(COOKIE_NAME)
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="not authenticated",
+        )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="invalid token",
+            )
+
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
+
+    user = db.query(User).get(user_id)
+    return user
+
+
+def get_current_user_id(request: Request) -> str:
     """Dependency to extract token from cookies and verify the user."""
 
     token = request.cookies.get(COOKIE_NAME)
@@ -28,28 +59,16 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
         )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
+        user_id: str = payload.get("sub")
         if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="invalid token",
             )
-    except jwt.ExpiredSignatureError:
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired",
-        )
-    except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token",
+            detail="Invalid or expired token",
         )
 
-    user = db.query(User).get(user_id)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-    return user
+    return user_id
