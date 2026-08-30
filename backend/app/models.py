@@ -1,4 +1,5 @@
 # database tables
+from sqlalchemy import BigInteger
 import uuid
 from datetime import datetime, timezone
 
@@ -17,9 +18,12 @@ class User(Base):
     created_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
-    # Use 1536 for OpenAI, 384 for MiniLM, etc.
+
     is_active = Column(Boolean, default=True)
 
+    refreshToken = Column(String(255), nullable=True)
+    refreshTokenExpiry = Column(BigInteger, nullable=True)
+    
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

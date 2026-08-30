@@ -1,6 +1,9 @@
+"use client";
+
 import { useCallback, useState, useEffect } from "react";
 import { AuthContext, type User } from "./AuthContext";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -9,31 +12,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const checkAuthStatus = async () => {
-  //     try {
-  //       setIsInitializing(true);
-  //       const response = await fetch("http://localhost:8000/api/auth/me", {
-  //         method: "GET",
-  //         credentials: "include",
-  //       });
-
-  //       if (!response.ok) {
-  //         throw new Error("Uauthorized");
-  //       }
-
-  //       const userData: User = await response.json();
-  //       setUser(userData);
-  //     } catch (error) {
-  //       setUser(null);
-  //       console.error("Auth verification failed:", error);
-  //       router.push("/auth/login");
-  //     } finally {
-  //       setIsInitializing(false);
-  //     }
-  //   };
-  //   checkAuthStatus();
-  // }, [router]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -41,21 +19,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       try {
-        const response = await fetch("http://localhost:8000/api/auth/login", {
-          method: "POST",
-          credentials: "include", // REQUIRED for cookies
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
+        const response = await api.post("/auth/login", {
+          email,
+          password,
         });
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.detail || "Login failed"); //necessary to throw error only then it will go in catch block.
-        }
-
-        const data = await response.json();
+        const data = response.data;
 
         setUser(data.user);
 
@@ -83,26 +52,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       try {
-        const response = await fetch(
-          "http://localhost:8000/api/auth/register",
+        const response = await api.post(
+          "/auth/register",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username,
-              email,
-              password,
-              confirm_password: confirmPassword,
-            }),
+            username,
+            email,
+            password,
+            confirm_password: confirmPassword,
           },
         );
-
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.detail || "Registration failed");
-        }
 
         // After successful registration, redirect to login
         router.push("/auth/login");
@@ -118,12 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    fetch("http://localhost:8000/api/auth/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    api.post("/auth/logout");
     setUser(null);
     setError(null);
     router.push("/auth/login");

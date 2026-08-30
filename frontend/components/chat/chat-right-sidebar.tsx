@@ -2,10 +2,9 @@
 
 import { Lightbulb, LucideIcon, MessageSquare } from "lucide-react";
 import { FileUploadStruc } from "../shadcn-space/file-upload/file-upload-01";
-
+import api from "@/lib/axios";
 interface Prop {
   suggestions: string[];
-  // setFileName: (fileName: string) => void;
   description: string;
   label: string;
   icon: LucideIcon;
@@ -37,21 +36,15 @@ export function ChatInsights({
         formData.append("file", file);
         setDocStatus("Uploading PDF...");
 
-        const response = await fetch("http://localhost:8000/upload", {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        });
-        const data = await response.json();
-        if (data.message === "success") {
-          setDocStatus(`PDF Uploaded - ${data.chunks} chunks created`);
+        const response = await api.post("/upload", formData);
+        if (response.data.message === "success") {
+          setDocStatus(`PDF Uploaded - ${response.data.chunks} chunks created`);
           setDocReady(true);
-        } else if (data.error) {
-          setDocStatus(`Error: ${data.error}`);
+        } else if (response.data.error) {
+          setDocStatus(`Error: ${response.data.error}`);
         }
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
       setDocStatus(
         `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
       );

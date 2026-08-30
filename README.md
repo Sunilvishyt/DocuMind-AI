@@ -38,8 +38,9 @@ A powerful Retrieval-Augmented Generation (RAG) application that intelligently a
 - **Framework**: FastAPI (Python)
 - **AI/ML**: LangChain, Google Generative AI
 - **Vector Database**: FAISS (CPU)
-- **Document Processing**: EasyOCR (for images), PyPDF2
+- **Document Processing**: PyPDF2
 - **Database**: PostgreSQL (Neon)
+- **vector db**: pgvector (postgresql extension)
 - **Authentication**: JWT-based authentication
 - **Image Processing**: PIL, OpenCV
 
@@ -159,13 +160,10 @@ Create a `.env` file in the `backend` directory with the following variables:
 ```bash
 # Google API Configuration
 GEMINI_API_KEY=your_google_api_key_here
-
 # Database Configuration
 POSTGRES_URL=postgresql://user:password@host:port/database?sslmode=require&channel_binding=require
-
 # Frontend URL
 FRONTEND_URL=http://localhost:3000
-
 # Environment "development" OR "production"
 ENVIRONMENT=development
 ```
@@ -212,7 +210,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Step 2.4: Run the Backend Server
+#### Step 2.4: Migrations
+
+```bash
+alembic upgrade head
+```
+
+#### Step 2.5: Run the Backend Server
 
 ```bash
 uvicorn app.main:app --reload
@@ -278,7 +282,6 @@ The frontend will be available at `http://localhost:3000`
 - Click the upload area or drag and drop your files
 - Supported formats:
   - PDF files (.pdf)
-  - Image files (.jpg, .jpeg, .png, .gif)
 
 ### 5. Ask Questions
 
@@ -290,26 +293,6 @@ The frontend will be available at `http://localhost:3000`
 
 - Your conversation history is automatically saved
 - You can reference previous answers and continue the conversation
-
-## AI Assistants
-
-Each assistant is specialized for specific document types and uses domain-specific prompts:
-
-| Assistant           | Specialization              | Best For                                                   |
-| ------------------- | --------------------------- | ---------------------------------------------------------- |
-| Medical Assistant   | Healthcare & Medical Domain | Medical reports, patient records, health documentation     |
-| Financial Assistant | Finance & Economics         | Financial statements, investment reports, tax documents    |
-| Legal Assistant     | Legal & Contracts           | Contracts, legal agreements, court documents               |
-| Coding Assistant    | Technical & Programming     | Code documentation, technical specifications, README files |
-| General Assistant   | Multiple Domains            | General documents, mixed content, diverse queries          |
-
-## Security Features
-
-- **JWT Authentication**: Secure token-based authentication
-- **Password Hashing**: Bcrypt password encryption
-- **CORS Protection**: Cross-Origin Resource Sharing configuration
-- **Database Security**: Secure PostgreSQL connections with SSL
-- **Environment Variables**: Sensitive data stored in `.env` files
 
 ## Development
 
@@ -349,8 +332,6 @@ npm run lint
 - **FastAPI**: Modern web framework
 - **LangChain**: LLM orchestration and RAG framework
 - **google-genai**: Google Generative AI integration
-- **FAISS**: Vector similarity search
-- **EasyOCR**: Optical character recognition
 - **SQLAlchemy**: ORM for database operations
 - **Pydantic**: Data validation
 

@@ -1,10 +1,21 @@
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
-from app.config.jwt import create_access_token, get_current_user
+import jwt
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.config.jwt import create_access_token, create_refresh_token, get_current_user
 from app.constants import (
-    COOKIE_NAME,
+    ACCESS_COOKIE_NAME,
+    ALGORITHM,
     ENVIRONMENT,
-    JWT_EXPIRATION_MINUTES,
+    JWT_ACCESS_EXPIRATION_MINUTES,
+    JWT_REFRESH_EXPIRATION_DAYS,
+    REFRESH_COOKIE_NAME,
+    REFRESH_SECRET_KEY,
 )
 from app.database import get_db
 from app.models import User
@@ -16,10 +27,6 @@ from app.schemas import (
     UserResponse,
 )
 from app.utils.password_utils import hash_password, verify_hash
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from sqlalchemy import or_
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -66,9 +73,10 @@ async def login_user(
         )
 
     access_token = create_access_token(str(user.id))
+    refresh_token = create_refresh_token(str(user.id))
 
     response.set_cookie(
-        key=COOKIE_NAME,
+        key=ACCESS_COOKIE_NAME,
         value=access_token,
         httponly=True,  # Critical for XSS protection
         secure=ENVIRONMENT
@@ -76,8 +84,29 @@ async def login_user(
         samesite="lax"
         if ENVIRONMENT == "development"
         else "none",  # Balance of CSRF security and usability
-        max_age=JWT_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
+        max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
     )
+
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=refresh_token,
+        httponly=True,  # Critical for XSS protection
+        secure=ENVIRONMENT
+        != "development",  # Use False ONLY for local localhost development
+        samesite="lax"
+        if ENVIRONMENT == "development"
+        else "none",  # Balance of CSRF security and usability
+        max_age=JWT_REFRESH_EXPIRATION_DAYS * 24 * 60 * 60,  # 7 days in seconds
+    )
+
+    # add refreshtoken in db for user
+    user.refreshToken = refresh_token
+    future_date = datetime.now(timezone.utc) + timedelta(
+        days=JWT_REFRESH_EXPIRATION_DAYS
+    )
+    user.refreshTokenExpiry = future_date.timestamp()
+    db.commit()
+    db.refresh(user)
 
     return {
         "message": "Successfully logged in",
@@ -151,7 +180,9 @@ async def register_user(
 
 @router.post("/logout")
 def logout_user(response: Response):
-    response.delete_cookie(key=COOKIE_NAME)
+    response.delete_cookie(key=ACCESS_COOKIE_NAME)
+    response.delete_cookie(key=REFRESH_COOKIE_NAME)
+
     return {"message": "Successfully logged out"}
 
 
@@ -159,3 +190,57 @@ def logout_user(response: Response):
 @router.get("/me", response_model=UserResponse)
 def me(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user
+
+
+@router.post("/refresh")
+def refresh_token(
+    request: Request, response: Response, db: Annotated[Session, Depends(get_db)]
+):
+    refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
+    # db_refresh_token = db.query(User).filter(User.refresh_token == refresh_token).first()
+    # or not db_refresh_token or db_refresh_token.refreshTokenExpiry < int(datetime.now(timezone.utc).timestamp())
+
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="not authenticated",
+        )
+
+    try:
+        payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="invalid token",
+            )
+
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
+
+    user = db.query(User).get(user_id)
+    if (
+        not user
+        or user.refreshToken != refresh_token
+        or user.refreshTokenExpiry < int(datetime.now(timezone.utc).timestamp())
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+        )
+
+    access_token = create_access_token(str(user.id))
+
+    response.set_cookie(
+        key=ACCESS_COOKIE_NAME,
+        value=access_token,
+        httponly=True,
+        secure=ENVIRONMENT != "development",
+        samesite="lax" if ENVIRONMENT == "development" else "none",
+        max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,
+    )
+
+    return {"message": "Successfully refreshed token"}

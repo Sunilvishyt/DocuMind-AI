@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { type User } from "@/context/AuthContext";
+import api from "@/lib/axios";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { setIsInitializing, user, setUser, isInitializing } = useAuth();
@@ -14,18 +15,12 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       console.log("checkAuthStatus called");
       try {
         setIsInitializing(true);
-        const response = await fetch("http://localhost:8000/api/auth/me", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await api.get("/auth/me");
 
-        if (!response.ok) throw new Error("Uauthorized");
-
-        const userData: User = await response.json();
+        const userData: User = response.data;
         setUser(userData);
       } catch (error) {
         setUser(null);
-        console.error("Auth verification failed:", error);
         router.push("/auth/login");
       } finally {
         setIsInitializing(false);

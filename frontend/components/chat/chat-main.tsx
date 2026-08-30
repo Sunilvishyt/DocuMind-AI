@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
 
 export function ChatMain({
   fileName,
@@ -47,26 +48,12 @@ export function ChatMain({
     setMessages((prev) => [...prev, { role: "user", content: query }]);
 
     try {
-      const response = await fetch("http://localhost:8000/chat", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: query,
-          assistant_type: assistantType,
-        }),
+      const response = await api.post("/chat", {
+        question: query,
+        assistant_type: assistantType,
       });
 
-      if (response.status === 401) {
-        router.push("/auth/login");
-      }
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || "Failed to get response");
-      }
-
-      const data = await response.json();
+      const data = response.data;
       const answer =
         typeof data.answer === "string"
           ? data.answer
@@ -74,7 +61,6 @@ export function ChatMain({
 
       setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
     } catch (error) {
-      console.error("Error sending message:", error);
       setMessages((prev) => [
         ...prev,
         {
