@@ -4,10 +4,7 @@ import axios from "axios";
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api",
   timeout: 10000,
-  headers: {
-    // This acts as a fallback default, but Axios can override it dynamically
-    "Content-Type": "application/json",
-  },
+  headers: {},
   withCredentials: true,
 });
 

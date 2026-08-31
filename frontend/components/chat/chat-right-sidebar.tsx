@@ -35,7 +35,6 @@ export function ChatInsights({
         const formData = new FormData();
         formData.append("file", file);
         setDocStatus("Uploading PDF...");
-
         const response = await api.post("/upload", formData);
         if (response.data.message === "success") {
           setDocStatus(`PDF Uploaded - ${response.data.chunks} chunks created`);

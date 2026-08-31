@@ -8,7 +8,7 @@ from app.services.chunking_service import chunk_documents
 from app.services.pdf_service import extract_pdf_documents
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 
 @router.post("/upload")

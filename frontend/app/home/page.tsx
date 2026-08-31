@@ -5,11 +5,14 @@ import Sidebar from "@/components/home/Sidebar";
 import ExpertSelection from "@/components/home/ExpertSelection";
 import HomeSettings from "@/components/home/HomeSettings";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import {useAuth} from "@/context/AuthContext";
 
 export default function AssistantSelector() {
   const [activeTab, setActiveTab] = useState<"assistants" | "settings">(
     "assistants",
   );
+
+
 
   return (
     <ProtectedRoute>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AuthContext, type User } from "./AuthContext";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import api from "@/lib/axios"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -11,7 +12,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
+  useEffect(() => {
+    setError("");
+  }, [pathname]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -30,10 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Redirect to home
         router.push("/home");
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Login failed";
-        setError(errorMessage);
+      } catch (err: any) {
+        console.log(err)
+        setError(err.response.data.detail);
       } finally {
         setIsLoading(false);
       }
@@ -52,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       try {
-        const response = await api.post(
+        await api.post(
           "/auth/register",
           {
             username,
@@ -64,10 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // After successful registration, redirect to login
         router.push("/auth/login");
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Registration failed";
-        setError(errorMessage);
+      } catch (err: any) {
+        setError(err.response.data.detail);
       } finally {
         setIsLoading(false);
       }
@@ -95,7 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: Boolean(user),
   };
 
-  if (isInitializing) return <div>initializing...</div>;
+  if (isInitializing) return <div className="flex items-center justify-center h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

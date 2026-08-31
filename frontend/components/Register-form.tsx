@@ -34,6 +34,8 @@ export function SignupForm({}: React.ComponentProps<"div">) {
 
     // Validation
     if (password !== confirmPassword) {
+      setPassword("")
+      setConfirmPassword("")
       setValidationError("Passwords do not match");
       return;
     }

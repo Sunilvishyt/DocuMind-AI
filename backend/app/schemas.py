@@ -1,8 +1,38 @@
+from email_validator import validate_email
+from email_validator import EmailNotValidError
 from datetime import datetime
 from uuid import UUID
-from typing import Any
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import Any, Annotated
+from pydantic import BaseModel, Field, field_validator, AfterValidator
 
+import re
+from pydantic_core import PydanticCustomError
+
+# 1. Helper functions that throw clean messages to frontend
+def validate_email_str(v: str) -> str:
+    pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(pattern, v):
+        raise PydanticCustomError("invalid_email", "Invalid email address format.")
+    return v
+
+def validate_password_str(v: str) -> str:
+    if len(v) < 8:
+        raise PydanticCustomError("password_too_short", "Password must be at least 8 characters.")
+    if len(v) > 72:
+        raise PydanticCustomError("password_too_long", "Password cannot exceed 72 characters.")
+    return v
+
+def validate_username_str(v:str) -> str:
+    if len(v) < 3:
+        raise PydanticCustomError("username_too_short", "Username must be at least 3 characters.")
+    if len(v) > 50:
+        raise PydanticCustomError("username_too_long", "Username cannot exceed 50 characters.")
+    return v
+
+# 2. Define reusable Zod-like types
+Email = Annotated[str, AfterValidator(validate_email_str)]
+Password = Annotated[str, AfterValidator(validate_password_str)]
+Username = Annotated[str, AfterValidator(validate_username_str)]
 
 class UserResponse(BaseModel):
     id: str
@@ -23,16 +53,15 @@ class UserResponse(BaseModel):
 
 
 class UserRegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr
-    password: str = Field(..., min_length=8, max_length=72)
-    confirm_password: str = Field(..., min_length=8, max_length=72)
+    username: str = Username
+    email: Email
+    password: Password
+    confirm_password: Password
 
-
+# 3. Clean Model (Looks just like Zod!)
 class UserLoginRequest(BaseModel):
-    email: EmailStr
-    password: str
-
+    email: Email
+    password: Password
 
 class RegisterResponse(BaseModel):
     message: str

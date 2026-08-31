@@ -2,11 +2,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from sqlalchemy import or_
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-
 from app.config.jwt import create_access_token, create_refresh_token, get_current_user
 from app.constants import (
     ACCESS_COOKIE_NAME,
@@ -27,6 +22,10 @@ from app.schemas import (
     UserResponse,
 )
 from app.utils.password_utils import hash_password, verify_hash
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -50,74 +49,85 @@ async def login_user(
     response: Response,
     db: Annotated[Session, Depends(get_db)],
 ):
-    request_data = UserLoginRequest.model_validate(await _get_request_body(request))
+    try:
+        request_data = UserLoginRequest.model_validate(await _get_request_body(request))
 
-    # Find user by email
-    user = db.query(User).filter(User.email == request_data.email).first()
+        # Find user by email
+        user = db.query(User).filter(User.email == request_data.email).first()
 
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        # Verify password
+        if not verify_hash(request_data.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password"
+            )
+
+        # Check if user is active
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="User account is inactive"
+            )
+
+        access_token = create_access_token(str(user.id))
+        refresh_token = create_refresh_token(str(user.id))
+
+        response.set_cookie(
+            key=ACCESS_COOKIE_NAME,
+            value=access_token,
+            httponly=True,  # Critical for XSS protection
+            secure=ENVIRONMENT
+            != "development",  # Use False ONLY for local localhost development
+            samesite="lax"
+            if ENVIRONMENT == "development"
+            else "none",  # Balance of CSRF security and usability
+            max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
         )
 
-    # Verify password
-    if not verify_hash(request_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password"
+        response.set_cookie(
+            key=REFRESH_COOKIE_NAME,
+            value=refresh_token,
+            httponly=True,  # Critical for XSS protection
+            secure=ENVIRONMENT
+            != "development",  # Use False ONLY for local localhost development
+            samesite="lax"
+            if ENVIRONMENT == "development"
+            else "none",  # Balance of CSRF security and usability
+            max_age=JWT_REFRESH_EXPIRATION_DAYS * 24 * 60 * 60,  # 7 days in seconds
         )
 
-    # Check if user is active
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="User account is inactive"
+        # add refreshtoken in db for user
+        user.refreshToken = refresh_token
+        future_date = datetime.now(timezone.utc) + timedelta(
+            days=JWT_REFRESH_EXPIRATION_DAYS
         )
+        user.refreshTokenExpiry = future_date.timestamp()
+        db.commit()
+        db.refresh(user)
 
-    access_token = create_access_token(str(user.id))
-    refresh_token = create_refresh_token(str(user.id))
+        return {
+            "message": "Successfully logged in",
+            "user": {
+                "id": str(user.id),
+                "username": user.username,
+                "email": user.email,
+                "is_active": user.is_active,
+                "created_at": str(user.created_at),
+            },
+        }
 
-    response.set_cookie(
-        key=ACCESS_COOKIE_NAME,
-        value=access_token,
-        httponly=True,  # Critical for XSS protection
-        secure=ENVIRONMENT
-        != "development",  # Use False ONLY for local localhost development
-        samesite="lax"
-        if ENVIRONMENT == "development"
-        else "none",  # Balance of CSRF security and usability
-        max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
-    )
+    # reraising error so it wont go in other exception
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is so FastAPI can send 401, 400, 404, etc. directly
+        raise
 
-    response.set_cookie(
-        key=REFRESH_COOKIE_NAME,
-        value=refresh_token,
-        httponly=True,  # Critical for XSS protection
-        secure=ENVIRONMENT
-        != "development",  # Use False ONLY for local localhost development
-        samesite="lax"
-        if ENVIRONMENT == "development"
-        else "none",  # Balance of CSRF security and usability
-        max_age=JWT_REFRESH_EXPIRATION_DAYS * 24 * 60 * 60,  # 7 days in seconds
-    )
-
-    # add refreshtoken in db for user
-    user.refreshToken = refresh_token
-    future_date = datetime.now(timezone.utc) + timedelta(
-        days=JWT_REFRESH_EXPIRATION_DAYS
-    )
-    user.refreshTokenExpiry = future_date.timestamp()
-    db.commit()
-    db.refresh(user)
-
-    return {
-        "message": "Successfully logged in",
-        "user": {
-            "id": str(user.id),
-            "username": user.username,
-            "email": user.email,
-            "is_active": user.is_active,
-            "created_at": str(user.created_at),
-        },
-    }
+    except Exception as e:
+        print(e)
+        error = e.errors()[0]["msg"]
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
 @router.post("/register", response_model=RegisterResponse)
@@ -126,56 +136,68 @@ async def register_user(
     db: Annotated[Session, Depends(get_db)],
 ):
     """Register a new user"""
-    request_data = UserRegisterRequest.model_validate(await _get_request_body(request))
-
-    if request_data.password != request_data.confirm_password:
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Password does not match"
+    try:
+        request_data = UserRegisterRequest.model_validate(
+            await _get_request_body(request)
         )
 
-    # or_ is used to check if either case is true return the existing user.
-    existing_user = (
-        db.query(User)
-        .filter(
-            or_(
-                User.username == request_data.username, User.email == request_data.email
-            )
-        )
-        .first()
-    )
-
-    # If the user already exists, return an error
-    if existing_user:
-        if existing_user.username == request.username:
+        if request_data.password != request_data.confirm_password:
             return HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already exists",
+                detail="Password does not match",
             )
-        return HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
+
+        # or_ is used to check if either case is true return the existing user.
+        existing_user = (
+            db.query(User)
+            .filter(
+                or_(
+                    User.username == request_data.username,
+                    User.email == request_data.email,
+                )
+            )
+            .first()
         )
 
-    # Hash the password
-    hashed_password = hash_password(request_data.password)
+        # If the user already exists, return an error
+        if existing_user:
+            if existing_user.username == request.username:
+                return HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already exists",
+                )
+            return HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
+            )
 
-    # Create a new user
-    new_user = User(
-        username=request_data.username,
-        email=request_data.email,
-        hashed_password=hashed_password,
-    )
-    try:
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
+        # Hash the password
+        hashed_password = hash_password(request_data.password)
 
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username or email already exists",
+        # Create a new user
+        new_user = User(
+            username=request_data.username,
+            email=request_data.email,
+            hashed_password=hashed_password,
         )
-    return {"message": "User registered successfully"}
+        try:
+            db.add(new_user)
+            db.commit()
+            db.refresh(new_user)
+
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username or email already exists",
+            )
+        return {"message": "User registered successfully"}
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        error = e.errors()[0]["msg"]
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
 @router.post("/logout")

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
 
 export default function page() {
+
   return (
     // Main wrapper must be relative to contain the absolute background
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-950">

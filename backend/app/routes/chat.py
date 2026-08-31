@@ -8,7 +8,7 @@ from app.prompts.prompt_template import ASSISTANT_PROMPTS
 from app.schemas import ChatRequest
 from fastapi import APIRouter, Depends, HTTPException, Response
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 
 
 @router.post("/chat")

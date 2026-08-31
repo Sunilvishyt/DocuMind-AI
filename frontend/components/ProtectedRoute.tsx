@@ -12,7 +12,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      console.log("checkAuthStatus called");
       try {
         setIsInitializing(true);
         const response = await api.get("/auth/me");
@@ -29,16 +28,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     if (!user && !isInitializing) checkAuthStatus();
   }, [router, setIsInitializing, user, setUser, isInitializing]);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-  //         <p className="text-gray-400">Loading...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return <>{children}</>;
 }

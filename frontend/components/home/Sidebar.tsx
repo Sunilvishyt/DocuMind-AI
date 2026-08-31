@@ -62,9 +62,6 @@ export default function Sidebar({
               <span className="text-sm font-medium text-foreground">
                 {user?.username || "User"}
               </span>
-              <span className="text-xs text-muted-foreground">
-                ID: {user?.id?.slice(0, 8).toUpperCase() || "N/A"}
-              </span>
             </div>
           </div>
         </div>
