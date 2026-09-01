@@ -81,9 +81,7 @@ async def login_user(
             httponly=True,  # Critical for XSS protection
             secure=ENVIRONMENT
             != "development",  # Use False ONLY for local localhost development
-            samesite="lax"
-            if ENVIRONMENT == "development"
-            else "none",  # Balance of CSRF security and usability
+            samesite="lax",
             max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,  # 45 minutes in seconds
         )
 
@@ -93,9 +91,7 @@ async def login_user(
             httponly=True,  # Critical for XSS protection
             secure=ENVIRONMENT
             != "development",  # Use False ONLY for local localhost development
-            samesite="lax"
-            if ENVIRONMENT == "development"
-            else "none",  # Balance of CSRF security and usability
+            samesite="lax",
             max_age=JWT_REFRESH_EXPIRATION_DAYS * 24 * 60 * 60,  # 7 days in seconds
         )
 
@@ -261,7 +257,7 @@ def refresh_token(
         value=access_token,
         httponly=True,
         secure=ENVIRONMENT != "development",
-        samesite="lax" if ENVIRONMENT == "development" else "none",
+        samesite="lax",
         max_age=JWT_ACCESS_EXPIRATION_MINUTES * 60,
     )
 
