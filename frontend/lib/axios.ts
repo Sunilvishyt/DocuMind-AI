@@ -1,8 +1,13 @@
 // lib/api.js
 import axios from "axios";
 
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  process.env.BACKEND_URL ||
+  "http://localhost:8000/api";
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api",
+  baseURL: BACKEND_URL,
   timeout: 10000,
   headers: {},
   withCredentials: true,
@@ -21,7 +26,7 @@ api.interceptors.response.use(
       try {
         // Use the backend's refresh endpoint
         await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+          `${BACKEND_URL}/auth/refresh`,
           {},
           { withCredentials: true },
         );
