@@ -8,7 +8,7 @@ const BACKEND_URL =
 
 const api = axios.create({
   baseURL: BACKEND_URL,
-  timeout: 10000,
+  timeout: 90000,
   headers: {},
   withCredentials: true,
 });
