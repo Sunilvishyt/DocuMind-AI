@@ -8,25 +8,37 @@ import {
   FileText,
   UploadCloud,
   ShieldCheck,
+  Menu,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
+import { FileUploadStruc } from "../shadcn-space/file-upload/file-upload-01";
 
 export function ChatMain({
   fileName,
+  setFileName,
   color,
   docStatus,
+  setDocStatus,
   docReady,
+  setDocReady,
   assistantType = "general",
+  sidebarOpen,
+  setSidebarOpen,
 }: {
   fileName: string;
+  setFileName: (fileName: string) => void;
   color: string;
   docStatus: string;
+  setDocStatus: (status: string) => void;
   docReady: boolean;
+  setDocReady: (ready: boolean) => void;
   assistantType?: string;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
 }) {
   const [isThinking, setIsThinking] = useState(false);
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
@@ -74,8 +86,33 @@ export function ChatMain({
     }
   }
 
+  async function handleFileChange(files: File[]) {
+    try {
+      const file = files[0];
+      if (file) {
+        console.log("File uploaded:", file.name);
+        setFileName(file.name);
+
+        const formData = new FormData();
+        formData.append("file", file);
+        setDocStatus("Uploading PDF...");
+        const response = await api.post("/upload", formData);
+        if (response.data.message === "success") {
+          setDocStatus(`PDF Uploaded - ${response.data.chunks} chunks created`);
+          setDocReady(true);
+        } else if (response.data.error) {
+          setDocStatus(`Error: ${response.data.error}`);
+        }
+      }
+    } catch (error) {
+      setDocStatus(
+        `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
   return (
-    <main className="flex-1 flex flex-col relative bg-background">
+    <main className=" flex-1 flex flex-col relative bg-background">
       {/* IMPROVED HEADER */}
       <header className="h-16 border-b border-border flex items-center justify-between px-8 bg-card/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
@@ -84,34 +121,25 @@ export function ChatMain({
             className={`size-2 rounded-full animate-pulse ${fileName ? "bg-(--my-color)" : "bg-muted-foreground"}`}
           />
           <div className="flex flex-col">
-            <h1 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-              Current Session
-            </h1>
             <p className="text-sm font-medium text-foreground">
               {docReady ? fileName : "Awaiting Document..."}
             </p>
           </div>
         </div>
-
         <div
           style={{ "--my-color": color } as React.CSSProperties}
-          className="flex items-center gap-2 px-3 py-1 rounded-full bg-(--my-color)/5 border border-(--my-color)/10"
+          className="flex items-center gap-2 p-3 py-1 rounded-lg bg-(--my-color)/5 border border-(--my-color)/10"
         >
-          <ShieldCheck
-            style={{ "--my-color": color } as React.CSSProperties}
-            size={14}
-            className="text-(--my-color)"
-          />
-          <span
-            style={{ "--my-color": color } as React.CSSProperties}
-            className="text-[10px] font-bold text-(--my-color) uppercase tracking-tighter"
+          <button
+            className=" hover:bg-(--my-color)/10"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            HIPAA Encrypted
-          </span>
+            <Menu />
+          </button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-32">
+      <div className="flex-1 overflow-y-auto p-4 py-8 space-y-8 pb-32">
         <AnimatePresence mode="wait">
           {messages.length === 0 ? (
             /* IMPROVED EMPTY STATE */
@@ -183,7 +211,7 @@ export function ChatMain({
                   </div>
                   <div
                     style={{ "--my-color": color } as React.CSSProperties}
-                    className={`max-w-[70%] p-7 rounded-2xl shadow-sm ${
+                    className={`max-w-[70%] p-4 rounded-2xl shadow-sm ${
                       msg.role === "assistant"
                         ? "bg-card rounded-tl-none border border-border text-foreground prose prose-invert"
                         : "bg-(--my-color)/20 border border-(--my-color)/10 text-foreground rounded-tr-none ml-auto"
@@ -257,35 +285,39 @@ export function ChatMain({
       {/* INPUT BAR */}
       <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-background via-background to-transparent">
         <div className="max-w-3xl mx-auto relative group">
-          <div
-            style={{ "--my-color": color } as React.CSSProperties}
-            className="absolute inset-0 bg-(--my-color)/5 blur-xl group-focus-within:bg-(--my-color)/10 transition-all rounded-2xl"
-          />
-          <input
-            style={{ "--my-color": color } as React.CSSProperties}
-            className="w-full h-14 bg-card border border-border rounded-2xl pl-12 pr-16 focus:ring-2 focus:ring-(--my-color)/50 focus:border-(--my-color)/50 outline-none transition-all text-foreground placeholder:text-muted-foreground relative z-10"
-            placeholder={
-              docReady
-                ? "Ask about the document..."
-                : "Upload a file to enable chat..."
-            }
-            disabled={!docReady}
-            onChange={(e) => setQuery(e.target.value)}
-            value={query}
-          />
-          <Sparkles
-            style={{ "--my-color": color } as React.CSSProperties}
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 transition-colors ${fileName ? "text-(--my-color)" : "text-muted-foreground"}`}
-            size={18}
-          />
-          <button
-            style={{ "--my-color": color } as React.CSSProperties}
-            disabled={!fileName}
-            className="absolute right-3 top-1/2 -translate-y-1/2 size-10 bg-(--my-color) disabled:bg-muted disabled:text-muted-foreground text-foreground rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-(--my-color)/20 z-20"
-            onClick={handleMessageSend}
-          >
-            <Send size={18} />
-          </button>
+          {!docReady ? (
+            <div className="bg-card border border-border rounded-2xl shadow-lg p-2 max-h-64 overflow-y-auto">
+              <FileUploadStruc onChange={handleFileChange} />
+            </div>
+          ) : (
+            <>
+              <div
+                style={{ "--my-color": color } as React.CSSProperties}
+                className="absolute inset-0 bg-(--my-color)/5 blur-xl group-focus-within:bg-(--my-color)/10 transition-all rounded-2xl"
+              />
+              <input
+                style={{ "--my-color": color } as React.CSSProperties}
+                className="w-full h-14 bg-card border border-border rounded-2xl pl-12 pr-16 focus:ring-2 focus:ring-(--my-color)/50 focus:border-(--my-color)/50 outline-none transition-all text-foreground placeholder:text-muted-foreground relative z-10"
+                placeholder="Ask about the document..."
+                disabled={!docReady}
+                onChange={(e) => setQuery(e.target.value)}
+                value={query}
+              />
+              <Sparkles
+                style={{ "--my-color": color } as React.CSSProperties}
+                className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 transition-colors ${fileName ? "text-(--my-color)" : "text-muted-foreground"}`}
+                size={18}
+              />
+              <button
+                style={{ "--my-color": color } as React.CSSProperties}
+                disabled={!fileName}
+                className="absolute right-3 top-1/2 -translate-y-1/2 size-10 bg-(--my-color) disabled:bg-muted disabled:text-muted-foreground text-foreground rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-(--my-color)/20 z-20"
+                onClick={handleMessageSend}
+              >
+                <Send size={18} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </main>

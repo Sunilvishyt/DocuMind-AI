@@ -1,28 +1,34 @@
-import { Settings, UserCircle2, Users, LogOut } from "lucide-react";
+import { Settings, UserCircle2, Users, LogOut, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar({
   activeTab,
   setActiveTab,
+  setIsSidebarOpen,
 }: {
   activeTab: string;
   setActiveTab: (tab: "assistants" | "settings") => void;
+  setIsSidebarOpen: (open: boolean) => void;
 }) {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border bg-sidebar/50 backdrop-blur-xl flex flex-col justify-between z-40">
+    <aside className="w-full md:w-64 shrink-0 border-r border-border bg-sidebar/50 backdrop-blur-xl flex flex-col justify-between z-40">
       <div>
-        <div className="px-6 mb-10 mt-10">
-          <div className="text-lg font-bold text-foreground mb-1">
-            DocuMind AI
+        <div className="flex justify-between items-center">
+          <div className="px-6 mb-10 mt-10">
+            <div className="text-lg font-bold text-foreground mb-1">
+              DocuMind AI
+            </div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest">
+              Premium Tier
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground uppercase tracking-widest">
-            Premium Tier
+          <div className="pr-8">
+            <button className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => setIsSidebarOpen(false)}><Menu /></button>
           </div>
         </div>
-
         <div className="flex-1 px-3 space-y-2">
           <button
             onClick={() => setActiveTab("assistants")}

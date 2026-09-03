@@ -17,11 +17,7 @@ const containerVariants = {
 };
 export default function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-6">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-125 h-125 bg-secondary/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-125 h-125 bg-tertiary/10 rounded-full blur-[120px]"></div>
-      </div>
+    <section className="relative min-h-[90vh] pt-16 px-5 md:px-20 flex items-center justify-center overflow-hidden ">
 
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <motion.div
@@ -30,34 +26,22 @@ export default function HeroSection() {
           variants={containerVariants}
           className="space-y-8"
         >
-          {/* <motion.div variants={itemVariants}>
-                <Badge
-                  variant="outline"
-                  className="py-1 px-4 border-border bg-card text-secondary gap-2 rounded-full"
-                >
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                  </span>
-                  V3 Engine Now Live
-                </Badge>
-              </motion.div> */}
 
           <motion.h1
             variants={itemVariants}
             className="text-5xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]"
           >
             Deep Intelligence <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7bd0ff] via-[#bec6e0] to-[#dec29a]">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-[#7bd0ff] via-[#bec6e0] to-[#dec29a]">
               <AuroraText> For Every Document</AuroraText>
             </span>
           </motion.h1>
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed"
+            className="text-lg md:text-md text-muted-foreground max-w-lg leading-relaxed"
           >
-            DocuMind AI transforms static PDFs into dynamic knowledge hubs. Chat
+            DocuMind AI transforms static PDF s into dynamic knowledge hubs. Chat
             with your data using specialized neural layers for Finance, Law, and
             Medicine.
           </motion.p>

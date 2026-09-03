@@ -9,25 +9,37 @@ export default function ChatPage() {
   const [fileName, setFileName] = useState("");
   const [docStatus, setDocStatus] = useState("Start your Analysis");
   const [docReady, setDocReady] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <ProtectedRoute>
       <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
         {/* Main Chat Workspace */}
         <ChatMain
           fileName={fileName}
+          setFileName={setFileName}
           color={ASSISTANT_MODES.GENERAL.color}
           docStatus={docStatus}
+          setDocStatus={setDocStatus}
           docReady={docReady}
+          setDocReady={setDocReady}
           assistantType="general"
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
         />
 
         {/* Right Sidebar: General Mode & Suggestions */}
-        <ChatInsights
-          config={ASSISTANT_MODES.GENERAL}
-          setFileName={setFileName}
-          setDocStatus={setDocStatus}
-          setDocReady={setDocReady}
-        />
+        {sidebarOpen && (
+          <div className="fixed inset-y-0 right-0 z-50 w-full md:relative md:w-80 animate-in slide-in-from-right md:animate-none">
+            <ChatInsights
+              config={ASSISTANT_MODES.GENERAL}
+              setFileName={setFileName}
+              setDocStatus={setDocStatus}
+              setDocReady={setDocReady}
+              setSidebarOpen={setSidebarOpen}
+            />
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );

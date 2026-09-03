@@ -4,7 +4,7 @@ import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 
 export default function ExpertiseSection() {
   return (
-    <section className="py-24 px-6 max-w-7xl mx-auto">
+    <section className="py-24 px-5 md:px-20 max-w-7xl mx-auto">
       <div className="text-center mb-20">
         <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
           <DiaTextReveal
@@ -12,10 +12,6 @@ export default function ExpertiseSection() {
             textColor="white"
           />
         </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-          Dedicated expert models fine-tuned for high-stakes industries where
-          precision is non-negotiable.
-        </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[

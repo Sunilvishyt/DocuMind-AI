@@ -16,11 +16,13 @@ export function ChatInsights({
   setFileName,
   setDocStatus,
   setDocReady,
+  setSidebarOpen,
 }: {
   config: Prop;
   setFileName: (fileName: string) => void;
   setDocStatus: (status: string) => void;
   setDocReady: (ready: boolean) => void;
+  setSidebarOpen?: (open: boolean) => void;
 }) {
   const { suggestions, description, label, icon: Icon, color } = config;
 
@@ -50,7 +52,15 @@ export function ChatInsights({
     }
   }
   return (
-    <aside className="w-80 border-l border-border bg-card p-6 flex flex-col gap-8">
+    // this is the right sidebar
+    <aside className="w-full h-full border-l border-border bg-card p-6 flex flex-col gap-8 relative overflow-y-auto">
+      {/* Mobile Close Button */}
+      <button 
+        className="md:hidden absolute top-4 right-4 p-2 rounded-full hover:bg-muted"
+        onClick={() => setSidebarOpen?.(false)}
+      >
+        ✕
+      </button>
       <div>
         <div
           style={{ "--my-color": color } as React.CSSProperties}
@@ -96,7 +106,6 @@ export function ChatInsights({
           ))}
         </div>
       </div>
-      <FileUploadStruc onChange={handleFileChange} />
     </aside>
   );
 }
