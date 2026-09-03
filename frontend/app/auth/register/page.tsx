@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
 
 export default function page() {
-
   return (
     // Main wrapper must be relative to contain the absolute background
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-950">
@@ -21,7 +20,7 @@ export default function page() {
 
       {/* 2. Content Layer (Higher Z-Index) */}
       <div className="z-10 flex flex-col items-center gap-4">
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="text-4xl pt-10 font-bold tracking-tight text-foreground">
           Documind AI
         </h1>
         <SignupForm />

@@ -70,9 +70,9 @@ export const FileUploadStruc: React.FC<FileUploadProps> = ({ onChange }) => {
             Upload file
           </p>
           <p className="relative z-20 font-normal text-muted-foreground text-base mt-0">
-            Drag or drop your images or pdf here or click to upload
+            Click to upload or Drag and Drop
           </p>
-          <div className="relative w-full mt-4 max-w-xl mx-auto">
+          <div className="relative w-full max-w-xl mx-auto">
             {files.length > 0 ? (
               files.map((file, idx) => (
                 <FileItem

@@ -197,21 +197,21 @@ export function ChatMain({
                 >
                   <div
                     style={{ "--my-color": color } as React.CSSProperties}
-                    className={`size-10 rounded-xl flex items-center justify-center shrink-0 border shadow-lg ${
+                    className={`size-8 md:size-10 rounded-xl flex items-center justify-center shrink-0 border shadow-lg ${
                       msg.role === "assistant"
                         ? "bg-(--my-color)/10 border-(--my-color)/20 text-(--my-color)"
                         : "bg-card border-border text-foreground"
                     }`}
                   >
                     {msg.role === "assistant" ? (
-                      <Bot size={20} />
+                      <Bot size={14} />
                     ) : (
-                      <User size={20} />
+                      <User size={14} />
                     )}
                   </div>
                   <div
                     style={{ "--my-color": color } as React.CSSProperties}
-                    className={`max-w-[70%] p-4 rounded-2xl shadow-sm ${
+                    className={` text-sm md:text-xl max-w-[70%] p-3 rounded-2xl shadow-sm ${
                       msg.role === "assistant"
                         ? "bg-card rounded-tl-none border border-border text-foreground prose prose-invert"
                         : "bg-(--my-color)/20 border border-(--my-color)/10 text-foreground rounded-tr-none ml-auto"
@@ -283,7 +283,7 @@ export function ChatMain({
       </div>
 
       {/* INPUT BAR */}
-      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-background via-background to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-8 bg-linear-to-t from-background via-background to-transparent">
         <div className="max-w-3xl mx-auto relative group">
           {!docReady ? (
             <div className="bg-card border border-border rounded-2xl shadow-lg p-2 max-h-64 overflow-y-auto">

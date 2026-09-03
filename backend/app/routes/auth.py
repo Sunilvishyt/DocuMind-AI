@@ -198,8 +198,17 @@ async def register_user(
 
 @router.post("/logout")
 def logout_user(response: Response):
-    response.delete_cookie(key=ACCESS_COOKIE_NAME)
-    response.delete_cookie(key=REFRESH_COOKIE_NAME)
+    response.delete_cookie(key=ACCESS_COOKIE_NAME,
+    httponly = True,
+    secure = ENVIRONMENT != "development",
+    samesite = "lax"
+    )
+    
+    response.delete_cookie(key=REFRESH_COOKIE_NAME,
+    httponly = True,
+    secure = ENVIRONMENT != "development",
+    samesite = "lax"
+    )
 
     return {"message": "Successfully logged out"}
 

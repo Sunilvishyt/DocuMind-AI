@@ -34,8 +34,8 @@ export function SignupForm({}: React.ComponentProps<"div">) {
 
     // Validation
     if (password !== confirmPassword) {
-      setPassword("")
-      setConfirmPassword("")
+      setPassword("");
+      setConfirmPassword("");
       setValidationError("Passwords do not match");
       return;
     }
@@ -49,7 +49,7 @@ export function SignupForm({}: React.ComponentProps<"div">) {
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 w-90 ")}>
+    <div className={cn("flex flex-col gap-6 w-4/5 md:w-90 ")}>
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -88,7 +88,7 @@ export function SignupForm({}: React.ComponentProps<"div">) {
                   />
                 </Field>
                 <Field>
-                  <Field className="grid grid-cols-2 gap-4 ">
+                  <Field className="md:grid md:grid-cols-2 gap-4">
                     <Field>
                       <FieldLabel htmlFor="password">Password</FieldLabel>
                       <Input

@@ -31,13 +31,13 @@ export function LoginForm() {
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 w-90")}>
+    <div className={cn("flex flex-col gap-6 w-4/5 md:w-90 ")}>
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
       >
-        <Card className="bg-slate-900 text-slate-50 border border-slate-700">
+        <Card className=" bg-slate-900 text-slate-50 border border-slate-700">
           <CardHeader className="text-center ">
             <CardTitle className="text-xl">Login to your account</CardTitle>
             <CardDescription>

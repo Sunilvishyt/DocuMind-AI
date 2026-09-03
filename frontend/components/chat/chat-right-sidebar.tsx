@@ -55,7 +55,7 @@ export function ChatInsights({
     // this is the right sidebar
     <aside className="w-full h-full border-l border-border bg-card p-6 flex flex-col gap-8 relative overflow-y-auto">
       {/* Mobile Close Button */}
-      <button 
+      <button
         className="md:hidden absolute top-4 right-4 p-2 rounded-full hover:bg-muted"
         onClick={() => setSidebarOpen?.(false)}
       >
@@ -94,7 +94,7 @@ export function ChatInsights({
           {suggestions.map((s, i) => (
             <button
               key={i}
-              className="text-left p-3 rounded-lg bg-card/50 border border-border text-xs text-muted-foreground hover:bg-card/80 hover:text-foreground transition-all flex items-center gap-2 group"
+              className="text-left p-3 rounded-lg bg-card/50 border border-border text-sm text-muted-foreground hover:bg-card/80 hover:text-foreground transition-all flex items-center gap-2 group"
             >
               <MessageSquare
                 style={{ "--my-color": color } as React.CSSProperties}

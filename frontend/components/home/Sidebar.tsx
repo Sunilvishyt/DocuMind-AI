@@ -14,7 +14,7 @@ export default function Sidebar({
   const { user, logout } = useAuth();
 
   return (
-    <aside className="w-full md:w-64 shrink-0 border-r border-border bg-sidebar/50 backdrop-blur-xl flex flex-col justify-between z-40">
+    <aside className="w-full md:w-64 shrink-0 border-r border-border bg-sidebar/50 backdrop-blur-xl flex flex-col gap-28 z-40">
       <div>
         <div className="flex justify-between items-center">
           <div className="px-6 mb-10 mt-10">
@@ -26,7 +26,12 @@ export default function Sidebar({
             </div>
           </div>
           <div className="pr-8">
-            <button className="text-muted-foreground hover:text-foreground transition-colors" onClick={() => setIsSidebarOpen(false)}><Menu /></button>
+            <button
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Menu />
+            </button>
           </div>
         </div>
         <div className="flex-1 px-3 space-y-2">
@@ -73,7 +78,7 @@ export default function Sidebar({
         </div>
         <button
           onClick={logout}
-          className="w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+          className="w-full flex items-center gap-2 px-4 py-4 text-sm rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
         >
           <LogOut size={16} />
           Logout
