@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AuthContext, type User } from "./AuthContext";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import api from "@/lib/axios"
+import api from "@/lib/axios";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Redirect to home
         router.push("/home");
       } catch (err: any) {
-        console.log(err)
+        console.log(err);
         setError(err.response.data.detail);
       } finally {
         setIsLoading(false);
@@ -56,15 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       try {
-        await api.post(
-          "/auth/register",
-          {
-            username,
-            email,
-            password,
-            confirm_password: confirmPassword,
-          },
-        );
+        await api.post("/auth/register", {
+          username,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        });
 
         // After successful registration, redirect to login
         router.push("/auth/login");
@@ -97,9 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: Boolean(user),
   };
 
-  if (isInitializing) return <div className="flex items-center justify-center h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-  </div>;
+  if (isInitializing)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
