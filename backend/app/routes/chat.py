@@ -12,11 +12,11 @@ router = APIRouter(prefix="/api")
 
 
 @router.post("/chat")
-def check(
+async def check(
     req: ChatRequest, current_user_id: Annotated[str, Depends(get_current_user_id)]
 ):
     try:
-        related_docs = query_user_vectorstore(
+        related_docs = await query_user_vectorstore(
             query=req.question, current_user_id=current_user_id
         )
 
@@ -24,9 +24,11 @@ def check(
 
         context = "\n\n".join([doc.page_content for doc in related_docs])
 
-        final_prompt = prompt.invoke({"context": context, "question": req.question})
+        final_prompt = await prompt.ainvoke(
+            {"context": context, "question": req.question}
+        )
 
-        response = llm.invoke(final_prompt)
+        response = await llm.ainvoke(final_prompt)
 
         json_string = json.dumps({"answer": response.content}, ensure_ascii=False)
 

@@ -1,10 +1,9 @@
 # database tables
-from sqlalchemy import BigInteger
 import uuid
 from datetime import datetime, timezone
 
 from app.database import Base
-from sqlalchemy import Boolean, Column, DateTime, String
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -23,7 +22,7 @@ class User(Base):
 
     refreshToken = Column(String(255), nullable=True)
     refreshTokenExpiry = Column(BigInteger, nullable=True)
-    
+
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

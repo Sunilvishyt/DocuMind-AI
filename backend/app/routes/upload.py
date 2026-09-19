@@ -26,7 +26,8 @@ async def upload_file(
 
     try:
         # clear old document embeddings
-        clear_existing_user_document(user_id=current_user_id)
+        await clear_existing_user_document(user_id=current_user_id)
+
         # get file extension and verify
         extension = os.path.splitext(file.filename)[1].lower()
         if extension != ".pdf":
@@ -37,9 +38,11 @@ async def upload_file(
 
         # Read the file content into memory
         file_bytes = await file.read()
-        raw_documents = extract_pdf_documents(current_user_id, file_bytes=file_bytes)
-        chunked_documents = chunk_documents(raw_documents)
-        store_user_chunks(chunks=chunked_documents)
+        raw_documents = await extract_pdf_documents(
+            current_user_id, file_bytes=file_bytes
+        )
+        chunked_documents = await chunk_documents(raw_documents)
+        await store_user_chunks(chunks=chunked_documents)
 
         # chunks are properly created.
         return {

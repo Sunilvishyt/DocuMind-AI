@@ -1,9 +1,9 @@
 from app.constants import POSTGRES_URL
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Create database engine
-engine = create_engine(
+engine = create_async_engine(
     POSTGRES_URL,
     echo=False,
     pool_pre_ping=True,
@@ -12,21 +12,25 @@ engine = create_engine(
 )
 
 # Create session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+AsyncSessionLocal = sessionmaker(
+    class_=AsyncSession,
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+    expire_on_commit=False,
+)
 
 # Base class for models
 Base = declarative_base()
 
 
-def get_db():
+async def get_db():
     """Dependency for getting database session"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    async with AsyncSessionLocal() as session:
+        yield session
 
 
-def init_db():
-    """Initialize database tables"""
-    Base.metadata.create_all(bind=engine)
+async def init_db():
+    """Initialize database tables asynchronously"""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

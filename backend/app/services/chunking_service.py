@@ -1,8 +1,10 @@
+import asyncio
+
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def chunk_documents(documents: list[Document]) -> list[Document]:
+def _chunk_documents_sync(documents: list[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200,
@@ -11,3 +13,7 @@ def chunk_documents(documents: list[Document]) -> list[Document]:
     # split_documents automatically propagates metadata (user_id, filename) to all chunks!
     chunks = text_splitter.split_documents(documents)
     return chunks
+
+
+async def chunk_documents(documents: list[Document]) -> list[Document]:
+    return await asyncio.to_thread(_chunk_documents_sync, documents)

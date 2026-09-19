@@ -23,9 +23,9 @@ from app.schemas import (
 )
 from app.utils.password_utils import hash_password, verify_hash
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from sqlalchemy import or_
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -47,13 +47,16 @@ async def _get_request_body(request: Request) -> dict[str, Any]:
 async def login_user(
     request: Request,
     response: Response,
-    db: Annotated[Session, Depends(get_db)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     try:
         request_data = UserLoginRequest.model_validate(await _get_request_body(request))
 
         # Find user by email
-        user = db.query(User).filter(User.email == request_data.email).first()
+        stmt = select(User).where(User.email == request_data.email)
+        result = await db.execute(stmt)
+
+        user = result.scalars().first()
 
         if not user:
             raise HTTPException(
@@ -61,7 +64,7 @@ async def login_user(
             )
 
         # Verify password
-        if not verify_hash(request_data.password, user.hashed_password):
+        if not await verify_hash(request_data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password"
             )
@@ -101,8 +104,8 @@ async def login_user(
             days=JWT_REFRESH_EXPIRATION_DAYS
         )
         user.refreshTokenExpiry = future_date.timestamp()
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
 
         return {
             "message": "Successfully logged in",
@@ -129,7 +132,7 @@ async def login_user(
 @router.post("/register", response_model=RegisterResponse)
 async def register_user(
     request: Request,
-    db: Annotated[Session, Depends(get_db)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Register a new user"""
     try:
@@ -138,36 +141,34 @@ async def register_user(
         )
 
         if request_data.password != request_data.confirm_password:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Password does not match",
             )
 
         # or_ is used to check if either case is true return the existing user.
-        existing_user = (
-            db.query(User)
-            .filter(
-                or_(
-                    User.username == request_data.username,
-                    User.email == request_data.email,
-                )
+        stmt = select(User).where(
+            or_(
+                User.username == request_data.username,
+                User.email == request_data.email,
             )
-            .first()
         )
+        result = await db.execute(stmt)
+        existing_user = result.scalars().first()
 
         # If the user already exists, return an error
         if existing_user:
-            if existing_user.username == request.username:
-                return HTTPException(
+            if existing_user.username == request_data.username:
+                raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Username already exists",
                 )
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
             )
 
         # Hash the password
-        hashed_password = hash_password(request_data.password)
+        hashed_password = await hash_password(request_data.password)
 
         # Create a new user
         new_user = User(
@@ -175,13 +176,14 @@ async def register_user(
             email=request_data.email,
             hashed_password=hashed_password,
         )
+
         try:
             db.add(new_user)
-            db.commit()
-            db.refresh(new_user)
+            await db.commit()
+            await db.refresh(new_user)
 
         except IntegrityError:
-            db.rollback()
+            await db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Username or email already exists",
@@ -198,16 +200,18 @@ async def register_user(
 
 @router.post("/logout")
 def logout_user(response: Response):
-    response.delete_cookie(key=ACCESS_COOKIE_NAME,
-    httponly = True,
-    secure = ENVIRONMENT != "development",
-    samesite = "lax"
+    response.delete_cookie(
+        key=ACCESS_COOKIE_NAME,
+        httponly=True,
+        secure=ENVIRONMENT != "development",
+        samesite="lax",
     )
-    
-    response.delete_cookie(key=REFRESH_COOKIE_NAME,
-    httponly = True,
-    secure = ENVIRONMENT != "development",
-    samesite = "lax"
+
+    response.delete_cookie(
+        key=REFRESH_COOKIE_NAME,
+        httponly=True,
+        secure=ENVIRONMENT != "development",
+        samesite="lax",
     )
 
     return {"message": "Successfully logged out"}
@@ -215,13 +219,13 @@ def logout_user(response: Response):
 
 # fastapi response model automatically removes the un needed fields from User database model and returns only what defined in the UserResponse.
 @router.get("/me", response_model=UserResponse)
-def me(current_user: Annotated[User, Depends(get_current_user)]):
+async def me(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user
 
 
 @router.post("/refresh")
-def refresh_token(
-    request: Request, response: Response, db: Annotated[Session, Depends(get_db)]
+async def refresh_token(
+    request: Request, response: Response, db: Annotated[AsyncSession, Depends(get_db)]
 ):
     refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
     # db_refresh_token = db.query(User).filter(User.refresh_token == refresh_token).first()
@@ -248,7 +252,8 @@ def refresh_token(
             detail="Invalid or expired token",
         )
 
-    user = db.query(User).get(user_id)
+    user = await db.get(User, user_id)
+
     if (
         not user
         or user.refreshToken != refresh_token
