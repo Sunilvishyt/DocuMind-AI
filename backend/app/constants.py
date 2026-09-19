@@ -1,11 +1,34 @@
 import os
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def normalize_async_database_url(url: str | None) -> str | None:
+    """Normalize PostgreSQL URLs for SQLAlchemy's asyncpg dialect."""
+    if not url:
+        return url
+
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    parsed = urlparse(url)
+    query_params = parse_qs(parsed.query)
+    query_params.pop("channel_binding", None)
+
+    sslmode = query_params.pop("sslmode", [None])[0]
+    if sslmode in {"require", "verify-ca", "verify-full"}:
+        query_params["ssl"] = ["require"]
+
+    return urlunparse(parsed._replace(query=urlencode(query_params, doseq=True)))
+
+
 FRONTEND_URL = os.getenv("FRONTEND_URL")
-POSTGRES_URL = os.getenv("POSTGRES_URL")
+POSTGRES_URL = normalize_async_database_url(os.getenv("POSTGRES_URL"))
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
 
